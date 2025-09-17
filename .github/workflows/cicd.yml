@@ -60,5 +60,5 @@ jobs:
             set -e
             docker login -u ${{ secrets.DOCKER_USERNAME }} -p '${{ secrets.DOCKER_PASSWORD }}'
             docker compose pull
-            docker compose up -d
+            docker compose up -d --force-recreate
             docker image prune -f || true
