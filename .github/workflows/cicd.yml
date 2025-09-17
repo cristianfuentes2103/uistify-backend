@@ -71,7 +71,6 @@ jobs:
           port: ${{ secrets.SSH_PORT || 22 }}
           script: |
             set -e
-            cd /home/deploy/uistify
             docker login -u ${{ secrets.DOCKER_USERNAME }} -p '${{ secrets.DOCKER_PASSWORD }}'
             docker compose pull
             docker compose up -d --remove-orphans
