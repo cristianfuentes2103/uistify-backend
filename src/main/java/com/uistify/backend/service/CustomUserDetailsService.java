@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import com.uistify.backend.persistence.model.User;
 import com.uistify.backend.persistence.repository.UserRepository;
 
+import java.util.Collections;
+
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
@@ -16,7 +18,8 @@ public class CustomUserDetailsService implements UserDetailsService {
 	public CustomUserDetailsService(UserRepository userRepository) {
 		this.userRepository = userRepository;
 	}
-	@Override
+
+    @Override
 	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 		User user = userRepository.findByEmail(email)
 				 .orElseThrow(() ->
@@ -24,6 +27,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
 		return new org.springframework.security.core.userdetails.User(user.getEmail(),
 				user.getPassword(),
-				null);
+				Collections.emptyList());
+        
 	}
 }
