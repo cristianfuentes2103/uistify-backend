@@ -17,6 +17,7 @@ import com.uistify.backend.persistence.model.User;
 import com.uistify.backend.persistence.repository.UserRepository;
 import com.uistify.backend.presentation.dto.LoginDto;
 import com.uistify.backend.presentation.dto.SignUpDto;
+import com.uistify.backend.util.JwtUtil;
 
 @RestController
 @RequestMapping("/api/authentication")
@@ -37,7 +38,7 @@ public class AuthController {
 				new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword()));
 
 		SecurityContextHolder.getContext().setAuthentication(authentication);
-		return new ResponseEntity<>("TOKEN", HttpStatus.OK);
+		return new ResponseEntity<>(JwtUtil.generateToken(loginDto.getEmail()), HttpStatus.OK);
 	}
 
 	@PostMapping("/signup")
@@ -53,6 +54,6 @@ public class AuthController {
 
 		userRepository.save(user);
 
-		return new ResponseEntity<>("TOKEN", HttpStatus.OK);
+		return new ResponseEntity<>(JwtUtil.generateToken(user.getEmail()), HttpStatus.OK);
 	}
 }
