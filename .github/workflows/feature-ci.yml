@@ -36,7 +36,6 @@ jobs:
             -Dsonar.login=${{ env.SONAR_TOKEN }}
             -Dsonar.projectKey=${{ env.SONAR_PROJECT_KEY }}
             -Dsonar.projectName=Uistify Java Backend
-            # Si no te importa cobertura, no declares jacoco:
             -Dsonar.sources=src/main
             -Dsonar.tests=src/test
             -Dsonar.exclusions=**/target/**
