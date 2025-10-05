@@ -13,8 +13,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       SONAR_HOST_URL: https://sonarqube.uistify.site
-      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}       
-      SONAR_PROJECT_KEY: uistify_java_backend       
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      SONAR_PROJECT_KEY: uistify_java_backend
     steps:
       - uses: actions/checkout@v4
         with: { fetch-depth: 0 }
