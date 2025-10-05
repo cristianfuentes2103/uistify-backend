@@ -1,0 +1,50 @@
+name: Feature CI (build + sonar)
+
+on:
+  push:
+    branches: ['feature/**']
+
+concurrency:
+  group: feature-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-sonar:
+    runs-on: ubuntu-latest
+    env:
+      SONAR_HOST_URL: https://sonarqube.uistify.site
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}       
+      SONAR_PROJECT_KEY: uistify_java_backend       
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+
+      - name: Build & Test
+        run: ./mvnw -B clean verify
+
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@v2
+        with:
+          args: >
+            -Dsonar.host.url=${{ env.SONAR_HOST_URL }}
+            -Dsonar.login=${{ env.SONAR_TOKEN }}
+            -Dsonar.projectKey=${{ env.SONAR_PROJECT_KEY }}
+            -Dsonar.projectName=Uistify Java Backend
+            # Si no te importa cobertura, no declares jacoco:
+            -Dsonar.sources=src/main
+            -Dsonar.tests=src/test
+            -Dsonar.exclusions=**/target/**
+
+      - name: Quality Gate
+        uses: SonarSource/sonarqube-quality-gate-action@v1
+        with:
+          scanMetadataReportFile: .scannerwork/report-task.txt
+        env:
+          SONAR_HOST_URL: ${{ env.SONAR_HOST_URL }}
+          SONAR_TOKEN: ${{ env.SONAR_TOKEN }}
