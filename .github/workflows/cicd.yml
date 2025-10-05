@@ -25,8 +25,8 @@ jobs:
           java-version: '17'
           cache: maven
       
-      - name: Build Maven (skip tests)
-        run: ./mvnw package
+      - name: Build Maven
+        run: ./mvnw -B -DskipTests package
       
       - name: Docker meta
         id: meta
