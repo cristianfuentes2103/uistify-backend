@@ -8,8 +8,6 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -18,11 +16,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableMethodSecurity
 public class SecurityConfig {
-	private UserDetailsService userDetailsService;
-
-	public SecurityConfig(UserDetailsService userDetailsService){
-		this.userDetailsService = userDetailsService;
-	}
 
 	@Bean
 	public static PasswordEncoder passwordEncoder(){
@@ -40,7 +33,7 @@ public class SecurityConfig {
 	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
 		http.csrf(AbstractHttpConfigurer::disable)
-			.authorizeHttpRequests((authorize) ->
+			.authorizeHttpRequests(authorize ->
 				authorize.requestMatchers(HttpMethod.GET, "/api/**").permitAll()
 					.requestMatchers("/api/authentication/**").permitAll()
 					.anyRequest().permitAll()
