@@ -1,4 +1,4 @@
-name: Feature CI (build + sonar)
+name: build + sonar
 
 on:
   push:
