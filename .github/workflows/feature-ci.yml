@@ -39,8 +39,9 @@ jobs:
             -Dsonar.sources=src/main
             -Dsonar.tests=src/test
             -Dsonar.exclusions=**/target/**
-            -D"sonar.java.binaries=**/target/classes"
-            -D"sonar.java.test.binaries=**/target/test-classes"
+            -Dsonar.java.binaries=target/classes
+            -Dsonar.java.test.binaries=target/test-classes
+            -Dsonar.junit.reportPaths=target/surefire-reports
 
       - name: Quality Gate
         uses: SonarSource/sonarqube-quality-gate-action@v1
