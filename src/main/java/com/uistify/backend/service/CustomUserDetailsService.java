@@ -1,12 +1,11 @@
 package com.uistify.backend.service;
 
+import com.uistify.backend.persistence.model.User;
+import com.uistify.backend.persistence.repository.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-
-import com.uistify.backend.persistence.model.User;
-import com.uistify.backend.persistence.repository.UserRepository;
 
 import java.util.Collections;
 

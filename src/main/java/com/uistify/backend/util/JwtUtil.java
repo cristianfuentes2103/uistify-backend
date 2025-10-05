@@ -1,15 +1,18 @@
 package com.uistify.backend.util;
 
-import java.security.Key;
-import java.util.Date;
-
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 
-public class JwtUtil {
+import java.security.Key;
+import java.util.Date;
+
+public final class JwtUtil {
+
+    private JwtUtil(){}
+
 	private static final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
-	private static final long EXPIRATION_TIME = 1000 * 60 * 60;
+	private static final long EXPIRATION_TIME = 1000 * 60L * 60;
 
 	public static String generateToken(String email){
 		return Jwts.builder()
