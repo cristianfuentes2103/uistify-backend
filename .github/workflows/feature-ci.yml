@@ -2,7 +2,7 @@ name: build + sonar
 
 on:
   push:
-    branches: ['feature/**']
+    branches: ['feature/**', 'fix/**', 'hotfix/**']
 
 concurrency:
   group: feature-ci-${{ github.ref }}
