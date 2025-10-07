@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/authentication")
+@RequestMapping("/api/auth")
 public class AuthController {
 
 	@Autowired
@@ -33,14 +33,23 @@ public class AuthController {
 
 	@PostMapping("/login")
 	public ResponseEntity<String> authenticateUser(@RequestBody LoginDto loginDto){
+		if (!userRepository.existsByEmail(loginDto.getEmail())){
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+
+		if (!userRepository.findByEmail(loginDto.getEmail()).
+			map(u -> passwordEncoder.matches(loginDto.getPassword(), u.getPassword())).
+			orElse(false)){
+			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+		}
 		Authentication authentication = authenticationManager.authenticate(
 				new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword()));
 
 		SecurityContextHolder.getContext().setAuthentication(authentication);
-		return new ResponseEntity<>(JwtUtil.generateToken(loginDto.getEmail()), HttpStatus.OK);
+		return new ResponseEntity<>("{\"token\":\""+JwtUtil.generateToken(loginDto.getEmail())+"\"}", HttpStatus.OK);
 	}
 
-	@PostMapping("/signup")
+	@PostMapping("/register")
 	public ResponseEntity<String> signUp(@RequestBody SignUpDto signUpDto){
 		if (userRepository.existsByEmail(signUpDto.getEmail())){
 			return new ResponseEntity<>("Email already taken", HttpStatus.CONFLICT);
@@ -53,6 +62,6 @@ public class AuthController {
 
 		userRepository.save(user);
 
-		return new ResponseEntity<>(JwtUtil.generateToken(user.getEmail()), HttpStatus.OK);
+		return new ResponseEntity<>("{\"token\":\""+JwtUtil.generateToken(user.getEmail())+"\"}", HttpStatus.OK);
 	}
 }
