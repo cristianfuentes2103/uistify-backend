@@ -29,17 +29,28 @@ public class Song {
 	@Column(name = "release_date", nullable = false)
 	private Date releaseDate;
 
+	/*
 	@ManyToOne
 	@JoinColumn(name = "artist_id")
 	private Artist artist;
+	*/
+	@Column(name = "artist")
+	private String artist;
 
+	/*
 	@ManyToOne
 	@JoinColumn(name = "album_id")
 	private Album album;
+	*/
+	@Column(name = "album")
+	private String album;
 
 	@Column(length = 128)
 	private String genre;
 
 	@Column(name = "picture_url", length = 512)
 	private String pictureUrl;
+
+	@Column(name = "source_url", length = 512)
+	private String sourceUrl;
 }
