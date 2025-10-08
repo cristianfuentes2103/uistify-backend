@@ -51,6 +51,6 @@ public class Song {
 	@Column(name = "picture_url", length = 512)
 	private String pictureUrl;
 
-	@Column(name = "source_url", length = 512)
+	@Column(name = "source_url", length = 512, nullable = false)
 	private String sourceUrl;
 }
