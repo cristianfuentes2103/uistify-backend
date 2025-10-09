@@ -6,8 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.Duration;
-import java.util.Date;
+import java.time.LocalDate;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -24,10 +23,10 @@ public class Song {
 	private String title;
 
 	@Column(name = "duration", nullable = false)
-	private Duration duration;
+	private int duration;
 
 	@Column(name = "release_date", nullable = false)
-	private Date releaseDate;
+	private LocalDate releaseDate;
 
 	/*
 	@ManyToOne

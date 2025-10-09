@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -24,7 +24,7 @@ public class Album {
 	private String name;
 
 	@Column(name = "release_date", nullable = false)
-	private Date releaseDate;
+	private LocalDate releaseDate;
 
 	@Column(name = "cover_image_url")
 	private String coverImageUrl;
