@@ -1,5 +1,7 @@
 package com.uistify.backend.persistence.model;
 
+import java.util.List;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,4 +28,7 @@ public class User {
 
 	@OneToOne(mappedBy = "user")
 	private Artist artist;
+
+	@OneToMany(mappedBy = "user")
+	private List<Playlist> playlists;
 }
