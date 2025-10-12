@@ -10,6 +10,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -58,6 +59,25 @@ public class PlaylistController {
 		PlaylistDto newPlaylistDto = PlaylistMapper.toDto(newPlaylist);
 		
 		return new ResponseEntity<>(newPlaylistDto, HttpStatus.OK);
+	}
+
+	@PutMapping
+	public ResponseEntity<PlaylistDto> updatePlaylist(
+			@RequestBody PlaylistDto playlistDtoUpdate,
+			Authentication auth){
+		User user = userRepository.findByEmail(auth.getName()).get();
+		boolean isPlaylistOwnedByUser = false;
+		for (Playlist p: user.getPlaylists()){
+			if (p.getId() == playlistDtoUpdate.getId()){
+				isPlaylistOwnedByUser = true;
+				break;
+			}
+		}
+		if (!isPlaylistOwnedByUser){
+			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+		}
+		PlaylistDto playlistDtoUpdated = playlistService.updatePlaylist(playlistDtoUpdate);
+		return new ResponseEntity<>(playlistDtoUpdated, HttpStatus.OK);
 	}
 
 	@GetMapping("/{playlistId}")
