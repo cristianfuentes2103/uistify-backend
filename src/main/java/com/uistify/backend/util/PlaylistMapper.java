@@ -1,7 +1,9 @@
 package com.uistify.backend.util;
 
 import com.uistify.backend.persistence.model.Playlist;
+import com.uistify.backend.persistence.model.PlaylistSong;
 import com.uistify.backend.persistence.model.User;
+import com.uistify.backend.presentation.dto.PlaylistDetailDto;
 import com.uistify.backend.presentation.dto.PlaylistDto;
 
 public class PlaylistMapper {
@@ -21,6 +23,20 @@ public class PlaylistMapper {
 		dto.setId(entity.getId());
 		dto.setTitle(entity.getTitle());
 		dto.setDescription(entity.getDescription());
+
+		return dto;
+	}
+
+	public static PlaylistDetailDto toDetailDto(Playlist entity){
+		PlaylistDetailDto dto = new PlaylistDetailDto();
+
+		dto.setId(entity.getId());
+		dto.setTitle(entity.getTitle());
+		dto.setDescription(entity.getDescription());
+		for (PlaylistSong song : entity.getSongs()) {
+			System.out.println(song.getNumberSong());
+			dto.getSongs().add(song.getSong());
+		}
 
 		return dto;
 	}
