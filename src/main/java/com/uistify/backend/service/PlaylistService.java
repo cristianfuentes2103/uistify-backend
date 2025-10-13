@@ -6,7 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.uistify.backend.persistence.model.Playlist;
+import com.uistify.backend.persistence.model.PlaylistSong;
+import com.uistify.backend.persistence.model.Song;
 import com.uistify.backend.persistence.repository.PlaylistRepository;
+import com.uistify.backend.persistence.repository.PlaylistSongRepository;
+import com.uistify.backend.persistence.repository.SongRepository;
 import com.uistify.backend.persistence.repository.UserRepository;
 import com.uistify.backend.presentation.dto.PlaylistDto;
 import com.uistify.backend.util.PlaylistMapper;
@@ -16,6 +20,12 @@ public class PlaylistService implements IPlaylistService{
 
 	@Autowired
 	PlaylistRepository playlistRepository;
+
+	@Autowired
+	SongRepository songRepository;
+
+	@Autowired
+	PlaylistSongRepository playlistSongRepository;
 
 	@Autowired
 	UserRepository userRepository;
@@ -45,5 +55,21 @@ public class PlaylistService implements IPlaylistService{
 
 	public void deletePlaylist(Long playlistId){
 		playlistRepository.deleteById(playlistId);
+	}
+
+	public int addSongToPlaylist(Long playlistId, Long songId){
+		Playlist playlist = playlistRepository.findById(playlistId).get();
+		Song song = songRepository.findById(songId).get();
+
+		if (playlistSongRepository.existsByPlaylistIdAndSongId(playlistId, songId)){
+			return 1;
+		}
+		PlaylistSong newPlaylistSong = new PlaylistSong();
+		newPlaylistSong.setPlaylist(playlist);
+		newPlaylistSong.setSong(song);
+		newPlaylistSong.setNumberSong(playlist.getSongs().size()+1);
+
+		playlistSongRepository.save(newPlaylistSong);
+		return 0;
 	}
 }

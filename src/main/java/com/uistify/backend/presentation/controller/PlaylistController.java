@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.uistify.backend.persistence.model.Playlist;
 import com.uistify.backend.persistence.model.User;
 import com.uistify.backend.persistence.repository.PlaylistRepository;
+import com.uistify.backend.persistence.repository.SongRepository;
 import com.uistify.backend.persistence.repository.UserRepository;
 import com.uistify.backend.presentation.dto.PlaylistDetailDto;
 import com.uistify.backend.presentation.dto.PlaylistDto;
@@ -37,6 +38,9 @@ public class PlaylistController {
 
 	@Autowired
 	PlaylistRepository playlistRepository;
+
+	@Autowired
+	SongRepository songRepository;
 
 	@GetMapping
 	public ResponseEntity<List<PlaylistDto>> getAllPlaylist(Authentication auth){
@@ -120,5 +124,33 @@ public class PlaylistController {
 
 		playlistService.deletePlaylist(playlistId);
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+	}
+
+	@PostMapping("/{playlistId}/songs/{songId}")
+	public ResponseEntity<Void> addSongToPlaylist(
+			@PathVariable Long playlistId,
+			@PathVariable Long songId,
+			Authentication auth){
+		User user = userRepository.findByEmail(auth.getName()).get();
+		boolean isPlaylistOwnedByUser = false;
+		for (Playlist p: user.getPlaylists()){
+			if (p.getId() == playlistId){
+				isPlaylistOwnedByUser = true;
+				break;
+			}
+		}
+		if (!isPlaylistOwnedByUser){
+			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+		}
+	
+		if (!songRepository.existsById(songId)){
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+		
+		int statusService = playlistService.addSongToPlaylist(playlistId, songId);
+		if (statusService == 1){
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+		return new ResponseEntity<>(HttpStatus.CREATED);
 	}
 }

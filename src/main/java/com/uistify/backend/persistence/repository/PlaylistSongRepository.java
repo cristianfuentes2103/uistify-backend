@@ -8,4 +8,5 @@ import com.uistify.backend.persistence.model.PlaylistSong;
 
 public interface PlaylistSongRepository extends JpaRepository<PlaylistSong, Long> {
 	List<PlaylistSong> findByPlaylist_Id(Long id);
+	boolean existsByPlaylistIdAndSongId(Long playlistId, Long songId);
 }
