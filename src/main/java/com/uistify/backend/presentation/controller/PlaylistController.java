@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -74,7 +75,7 @@ public class PlaylistController {
 			}
 		}
 		if (!isPlaylistOwnedByUser){
-			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 		}
 		PlaylistDto playlistDtoUpdated = playlistService.updatePlaylist(playlistDtoUpdate);
 		return new ResponseEntity<>(playlistDtoUpdated, HttpStatus.OK);
@@ -95,9 +96,29 @@ public class PlaylistController {
 			}
 		}
 		if (!isPlaylistOwnedByUser){
-			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 		}
 		PlaylistDetailDto playlistDetailDto = PlaylistMapper.toDetailDto(playlist);
 		return new ResponseEntity<>(playlistDetailDto, HttpStatus.OK);
+	}
+
+	@DeleteMapping("/{playlistId}")
+	public ResponseEntity<Void> deletePlaylist(
+			@PathVariable Long playlistId,
+			Authentication auth){
+		User user = userRepository.findByEmail(auth.getName()).get();
+		boolean isPlaylistOwnedByUser = false;
+		for (Playlist p: user.getPlaylists()){
+			if (p.getId() == playlistId){
+				isPlaylistOwnedByUser = true;
+				break;
+			}
+		}
+		if (!isPlaylistOwnedByUser){
+			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+		}
+
+		playlistService.deletePlaylist(playlistId);
+		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
 }

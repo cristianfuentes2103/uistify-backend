@@ -42,4 +42,8 @@ public class PlaylistService implements IPlaylistService{
 
 		return newPlaylistDto;
 	}
+
+	public void deletePlaylist(Long playlistId){
+		playlistRepository.deleteById(playlistId);
+	}
 }
