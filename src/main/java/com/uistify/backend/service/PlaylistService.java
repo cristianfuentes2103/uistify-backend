@@ -72,4 +72,13 @@ public class PlaylistService implements IPlaylistService{
 		playlistSongRepository.save(newPlaylistSong);
 		return 0;
 	}
+
+	public int deleteSongFromPlaylist(Long playlistId, Long songId){
+		if (!playlistSongRepository.existsByPlaylistIdAndSongId(playlistId, songId)){
+			return 1;
+		}
+		PlaylistSong playlistSong = playlistSongRepository.findByPlaylistIdAndSongId(playlistId, songId);
+		playlistSongRepository.deleteById(playlistSong.getId());
+		return 0;
+	}
 }

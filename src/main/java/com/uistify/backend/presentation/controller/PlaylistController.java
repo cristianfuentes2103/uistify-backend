@@ -153,4 +153,28 @@ public class PlaylistController {
 		}
 		return new ResponseEntity<>(HttpStatus.CREATED);
 	}
+
+	@DeleteMapping("/{playlistId}/songs/{songId}")
+	public ResponseEntity<Void> deleteSongFromPlaylist(
+			@PathVariable Long playlistId,
+			@PathVariable Long songId,
+			Authentication auth){
+		User user = userRepository.findByEmail(auth.getName()).get();
+		boolean isPlaylistOwnedByUser = false;
+		for (Playlist p: user.getPlaylists()){
+			if (p.getId() == playlistId){
+				isPlaylistOwnedByUser = true;
+				break;
+			}
+		}
+		if (!isPlaylistOwnedByUser){
+			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+		}
+
+		int statusService = playlistService.deleteSongFromPlaylist(playlistId, songId);
+		if (statusService == 1){
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+	}
 }
