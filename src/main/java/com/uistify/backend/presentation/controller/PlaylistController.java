@@ -26,6 +26,14 @@ import com.uistify.backend.presentation.dto.PlaylistDto;
 import com.uistify.backend.service.PlaylistService;
 import com.uistify.backend.util.PlaylistMapper;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
+@Tag(name = "Playlists", description = "CRUD playlists")
+@SecurityRequirement(name = "bearerAuth")
 @RestController
 @RequestMapping("/api/playlists")
 public class PlaylistController {
@@ -42,6 +50,9 @@ public class PlaylistController {
 	@Autowired
 	SongRepository songRepository;
 
+	@Operation(summary = "Obtiene todas las playlists del usuario")
+	@ApiResponse(responseCode = "200", description = "Acceso autorizado")
+	@ApiResponse(responseCode = "403", description = "No autorizado")
 	@GetMapping
 	public ResponseEntity<List<PlaylistDto>> getAllPlaylist(Authentication auth){
 		
@@ -53,9 +64,13 @@ public class PlaylistController {
 		return new ResponseEntity<>(listPlaylistDto, HttpStatus.OK);
 	}
 
+	@Operation(summary = "Crea una nueva playlist.")
+	@ApiResponse(responseCode = "200", description = "Acceso autorizado")
+	@ApiResponse(responseCode = "403", description = "No autorizado")
 	@PostMapping
 	public ResponseEntity<PlaylistDto> createPlaylist(
-			@RequestBody PlaylistDto playlistDto,
+			@io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Playlist nueva", required = true)
+				@RequestBody PlaylistDto playlistDto,
 			Authentication auth){
 		User user = userRepository.findByEmail(auth.getName()).get();
 		Playlist playlist = PlaylistMapper.toEntity(playlistDto, user);
@@ -66,9 +81,13 @@ public class PlaylistController {
 		return new ResponseEntity<>(newPlaylistDto, HttpStatus.OK);
 	}
 
+	@Operation(summary = "Actualiza una playlist.")
+	@ApiResponse(responseCode = "200", description = "Playlist actualizada")
+	@ApiResponse(responseCode = "401", description = "No autorizado")
 	@PutMapping
 	public ResponseEntity<PlaylistDto> updatePlaylist(
-			@RequestBody PlaylistDto playlistDtoUpdate,
+			@io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Playlist actualizada, con un id existente", required = true)
+				@RequestBody PlaylistDto playlistDtoUpdate,
 			Authentication auth){
 		User user = userRepository.findByEmail(auth.getName()).get();
 		boolean isPlaylistOwnedByUser = false;
@@ -85,9 +104,13 @@ public class PlaylistController {
 		return new ResponseEntity<>(playlistDtoUpdated, HttpStatus.OK);
 	}
 
+	@Operation(summary = "Devuelve la playlist con sus canciones.")
+	@ApiResponse(responseCode = "200", description = "Playlist proporcionada")
+	@ApiResponse(responseCode = "401", description = "No autorizado")
 	@GetMapping("/{playlistId}")
 	public ResponseEntity<PlaylistDetailDto> getPlaylist(
-			@PathVariable Long playlistId,
+			@Parameter(description = "id de playlist")
+				@PathVariable Long playlistId,
 			Authentication auth){
 
 		User user = userRepository.findByEmail(auth.getName()).get();
@@ -106,9 +129,13 @@ public class PlaylistController {
 		return new ResponseEntity<>(playlistDetailDto, HttpStatus.OK);
 	}
 
+	@Operation(summary = "Elimina una playlist.")
+	@ApiResponse(responseCode = "204", description = "Playlist eliminada con éxito.")
+	@ApiResponse(responseCode = "401", description = "No autorizado")
 	@DeleteMapping("/{playlistId}")
 	public ResponseEntity<Void> deletePlaylist(
-			@PathVariable Long playlistId,
+			@Parameter(description = "id de playlist")
+				@PathVariable Long playlistId,
 			Authentication auth){
 		User user = userRepository.findByEmail(auth.getName()).get();
 		boolean isPlaylistOwnedByUser = false;
@@ -126,10 +153,17 @@ public class PlaylistController {
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
 
+	@Operation(summary = "Añade una canción a una playlist.")
+	@ApiResponse(responseCode = "201", description = "Canción añadida a la playlist con éxito.")
+	@ApiResponse(responseCode = "404", description = "Canción no encontrada.")
+	@ApiResponse(responseCode = "400", description = "Canción ya añadida en la lista.")
+	@ApiResponse(responseCode = "401", description = "No autorizado")
 	@PostMapping("/{playlistId}/songs/{songId}")
 	public ResponseEntity<Void> addSongToPlaylist(
-			@PathVariable Long playlistId,
-			@PathVariable Long songId,
+			@Parameter(description = "id de playlist")
+				@PathVariable Long playlistId,
+			@Parameter(description = "id de canción")
+				@PathVariable Long songId,
 			Authentication auth){
 		User user = userRepository.findByEmail(auth.getName()).get();
 		boolean isPlaylistOwnedByUser = false;
@@ -154,10 +188,16 @@ public class PlaylistController {
 		return new ResponseEntity<>(HttpStatus.CREATED);
 	}
 
+	@Operation(summary = "Elimina una canción de una playlist.")
+	@ApiResponse(responseCode = "204", description = "Playlist eliminada con éxito.")
+	@ApiResponse(responseCode = "404", description = "No existe la canción en la playlist.")
+	@ApiResponse(responseCode = "401", description = "No autorizado")
 	@DeleteMapping("/{playlistId}/songs/{songId}")
 	public ResponseEntity<Void> deleteSongFromPlaylist(
-			@PathVariable Long playlistId,
-			@PathVariable Long songId,
+			@Parameter(description = "id de playlist")
+				@PathVariable Long playlistId,
+			@Parameter(description = "id de canción")
+				@PathVariable Long songId,
 			Authentication auth){
 		User user = userRepository.findByEmail(auth.getName()).get();
 		boolean isPlaylistOwnedByUser = false;
