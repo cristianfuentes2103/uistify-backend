@@ -6,10 +6,10 @@ import com.uistify.backend.persistence.model.User;
 import com.uistify.backend.presentation.dto.PlaylistDetailDto;
 import com.uistify.backend.presentation.dto.PlaylistDto;
 
-import lombok.NoArgsConstructor;
 
-@NoArgsConstructor
 public class PlaylistMapper {
+
+	private PlaylistMapper(){}
 
 	public static Playlist toEntity(PlaylistDto dto, User user){
 		Playlist entity = new Playlist();
