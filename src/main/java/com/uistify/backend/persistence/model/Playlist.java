@@ -1,5 +1,8 @@
 package com.uistify.backend.persistence.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,4 +28,8 @@ public class Playlist {
 	@ManyToOne
 	@JoinColumn(name = "user_id")
 	private User user;
+
+	@OneToMany(mappedBy = "playlist")
+	@OrderBy("numberSong ASC")
+	private List<PlaylistSong> songs = new ArrayList<>();
 }
