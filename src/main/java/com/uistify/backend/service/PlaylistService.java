@@ -48,9 +48,7 @@ public class PlaylistService implements IPlaylistService{
 
 		Playlist playlistUpdated = playlistRepository.save(playlist);
 
-		PlaylistDto newPlaylistDto = PlaylistMapper.toDto(playlistUpdated);
-
-		return newPlaylistDto;
+		return PlaylistMapper.toDto(playlistUpdated);
 	}
 
 	public void deletePlaylist(Long playlistId){

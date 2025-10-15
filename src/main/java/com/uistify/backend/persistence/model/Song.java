@@ -28,19 +28,9 @@ public class Song {
 	@Column(name = "release_date", nullable = false)
 	private LocalDate releaseDate;
 
-	/*
-	@ManyToOne
-	@JoinColumn(name = "artist_id")
-	private Artist artist;
-	*/
 	@Column(name = "artist")
 	private String artist;
 
-	/*
-	@ManyToOne
-	@JoinColumn(name = "album_id")
-	private Album album;
-	*/
 	@Column(name = "album")
 	private String album;
 

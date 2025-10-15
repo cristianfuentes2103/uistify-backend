@@ -6,6 +6,9 @@ import com.uistify.backend.persistence.model.User;
 import com.uistify.backend.presentation.dto.PlaylistDetailDto;
 import com.uistify.backend.presentation.dto.PlaylistDto;
 
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor
 public class PlaylistMapper {
 
 	public static Playlist toEntity(PlaylistDto dto, User user){
@@ -34,7 +37,6 @@ public class PlaylistMapper {
 		dto.setTitle(entity.getTitle());
 		dto.setDescription(entity.getDescription());
 		for (PlaylistSong song : entity.getSongs()) {
-			System.out.println(song.getNumberSong());
 			dto.getSongs().add(song.getSong());
 		}
 
