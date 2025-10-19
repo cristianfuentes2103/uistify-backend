@@ -75,7 +75,17 @@ public class PlaylistService implements IPlaylistService{
 		if (!playlistSongRepository.existsByPlaylistIdAndSongId(playlistId, songId)){
 			return 1;
 		}
+
 		PlaylistSong playlistSong = playlistSongRepository.findByPlaylistIdAndSongId(playlistId, songId);
+
+		Playlist playlist = playlistRepository.findById(playlistId).get();
+		for (PlaylistSong item : playlist.getSongs()) {
+			if (item.getNumberSong() > playlistSong.getNumberSong()){
+				item.setNumberSong(item.getNumberSong()-1);
+				playlistSongRepository.save(item);
+			}
+		}
+
 		playlistSongRepository.deleteById(playlistSong.getId());
 		return 0;
 	}
