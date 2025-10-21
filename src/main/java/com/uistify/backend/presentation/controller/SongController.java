@@ -1,7 +1,8 @@
 package com.uistify.backend.presentation.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,7 +30,7 @@ public class SongController {
 		description = "Se obtiene un fragmento del total de canciones al especificar los parámetros `page` y `size` de la siguiente forma `/api/songs?page=<Número página>&size=<Tamaño página>`")
 	@ApiResponse(responseCode = "200", description = "Catálogo de canciones.")
 	@GetMapping("")
-	public ResponseEntity<Page<Song>> getAllSongs(Pageable pageable){
+	public ResponseEntity<List<Song>> getAllSongs(Pageable pageable){
 		return new ResponseEntity<>(songService.getAllSongs(pageable) , HttpStatus.OK);
 	}
 
