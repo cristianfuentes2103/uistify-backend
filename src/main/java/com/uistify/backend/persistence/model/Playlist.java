@@ -29,7 +29,7 @@ public class Playlist {
 	@JoinColumn(name = "user_id")
 	private User user;
 
-	@OneToMany(mappedBy = "playlist")
+	@OneToMany(mappedBy = "playlist", cascade = CascadeType.ALL, orphanRemoval = true)
 	@OrderBy("numberSong ASC")
 	private List<PlaylistSong> songs = new ArrayList<>();
 }
