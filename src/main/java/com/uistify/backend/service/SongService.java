@@ -1,8 +1,11 @@
 package com.uistify.backend.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.uistify.backend.persistence.model.Song;
@@ -15,8 +18,13 @@ public class SongService implements ISongService {
 	SongRepository songRepository;
 
 	@Override
-	public List<Song> getAllSongs(){
-		return songRepository.findAll();
+	public Page<Song> getAllSongs(Pageable pageable){
+		return songRepository.findAll(pageable);
+	}
+
+	@Override
+	public Optional<Song> getSongById(Long id){
+		return songRepository.findById(id);
 	}
 
 	@Override
