@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -18,8 +17,8 @@ public class SongService implements ISongService {
 	SongRepository songRepository;
 
 	@Override
-	public Page<Song> getAllSongs(Pageable pageable){
-		return songRepository.findAll(pageable);
+	public List<Song> getAllSongs(Pageable pageable){
+		return songRepository.findAll(pageable).getContent();
 	}
 
 	@Override
