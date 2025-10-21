@@ -3,6 +3,7 @@ package com.uistify.backend.service;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -11,6 +12,7 @@ import com.uistify.backend.persistence.model.Song;
 import com.uistify.backend.persistence.repository.SongRepository;
 
 @Service
+@Transactional
 public class SongService implements ISongService {
 
 	@Autowired
