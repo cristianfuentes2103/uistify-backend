@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.uistify.backend.persistence.model.Playlist;
 import com.uistify.backend.persistence.model.PlaylistSong;
@@ -16,6 +17,7 @@ import com.uistify.backend.presentation.dto.PlaylistDto;
 import com.uistify.backend.util.PlaylistMapper;
 
 @Service
+@Transactional
 public class PlaylistService implements IPlaylistService{
 
 	@Autowired
