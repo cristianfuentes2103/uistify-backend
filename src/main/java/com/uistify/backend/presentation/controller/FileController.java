@@ -27,8 +27,6 @@ public class FileController {
     @ApiResponse(responseCode = "403", description = "No autorizado")
     @GetMapping("/{key}")
     public ResponseEntity<Object> getFile(Authentication auth, @PathVariable("key") String key) {
-
-        String name = auth.getName();
         return fileService.getFile(key);
     }
 
