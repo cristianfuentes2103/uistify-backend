@@ -20,3 +20,9 @@ Para este módulo se debe autenticar con un JWT en el encabezado.
 - **DELETE _/api/playlists/<idPlaylist>_** Eliminar la playlist
 - **POST _/api/playlists/<idPlaylist>/songs/<idCanción>_** Añade la canción a la playlist
 - **DELETE _/api/playlists/<idPlaylist>/songs/<idCanción>_** Elimina la canción de la playlist
+
+## Planes a futuro
+- Permitir reordenar las canciones en las playlists.
+- Implementar endpoints de artistas junto a sus álbumes y canciones
+- Compartir playlist de manera pública
+- Crear módulo para permitir al usuario ser un artista y subir sus canciones.
