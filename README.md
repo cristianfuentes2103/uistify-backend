@@ -21,10 +21,10 @@ Para este módulo se debe autenticar con un JWT en el encabezado.
 - **GET _/api/playlists_** Lista de playlists
 - **POST _/api/playlists_** Creación de playlists
 - **PUT _/api/playlists_** Actualización de una playlist
-- **GET _/api/playlists/<idPlaylist>_** Detalle y canciones de playlist
-- **DELETE _/api/playlists/<idPlaylist>_** Eliminar la playlist
-- **POST _/api/playlists/<idPlaylist>/songs/<idCanción>_** Añade la canción a la playlist
-- **DELETE _/api/playlists/<idPlaylist>/songs/<idCanción>_** Elimina la canción de la playlist
+- **GET _/api/playlists/&lt;idPlaylist&gt;_** Detalle y canciones de playlist
+- **DELETE _/api/playlists/&lt;idPlaylist&gt;_** Eliminar la playlist
+- **POST _/api/playlists/&lt;idPlaylist&gt;/songs/&lt;idCanción&gt;_** Añade la canción a la playlist
+- **DELETE _/api/playlists/&lt;idPlaylist&gt;/songs/&lt;idCanción&gt;_** Elimina la canción de la playlist
 
 ## Planes a futuro
 - Permitir reordenar las canciones en las playlists.
