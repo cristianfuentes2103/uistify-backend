@@ -1,6 +1,11 @@
 # Uistify-backend
 Backend del proyecto Uistify para el curso Entornos de Programación
 
+
+## Diseño base de datos
+
+![Base de datos](docs/db design.png)
+
 ## REST API
 
 ### Módulo de usuarios e inicio de sesión
