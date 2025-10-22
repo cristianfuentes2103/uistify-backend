@@ -2,7 +2,7 @@ package com.uistify.backend.infraestructure.persistence.jpa.adapter;
 
 import com.uistify.backend.domain.model.Playlist;
 import com.uistify.backend.domain.port.out.PlaylistRepository;
-import com.uistify.backend.infraestructure.persistence.jpa.Entity.PlaylistEntity;
+import com.uistify.backend.infraestructure.persistence.jpa.entity.PlaylistEntity;
 import com.uistify.backend.infraestructure.persistence.jpa.mapper.PlaylistEntityMapper;
 import com.uistify.backend.infraestructure.persistence.jpa.repository.PlaylistJpaRepository;
 import lombok.RequiredArgsConstructor;

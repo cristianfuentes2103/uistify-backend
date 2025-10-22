@@ -43,13 +43,7 @@ public class FileController {
             FileDownload file = maybeFile.get();
             HttpHeaders headers = new HttpHeaders();
             headers.setContentDisposition(ContentDisposition.attachment().filename(file.getFilename()).build());
-            MediaType mediaType;
-            try {
-                mediaType = MediaType.parseMediaType(file.getContentType());
-            } catch (InvalidMediaTypeException e) {
-                mediaType = MediaType.APPLICATION_OCTET_STREAM;
-            }
-            headers.setContentType(mediaType);
+            headers.setContentType(MediaType.parseMediaType(file.getContentType()));
             return new ResponseEntity<>(file.getContent(), headers, HttpStatus.OK);
         } catch (FileStorageException ex) {
             log.error("Error obteniendo archivo {}: {}", key, ex.getMessage(), ex);

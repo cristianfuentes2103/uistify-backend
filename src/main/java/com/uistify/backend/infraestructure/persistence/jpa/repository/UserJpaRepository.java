@@ -1,7 +1,8 @@
 package com.uistify.backend.infraestructure.persistence.jpa.repository;
 
-import com.uistify.backend.infraestructure.persistence.jpa.Entity.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.uistify.backend.infraestructure.persistence.jpa.entity.UserEntity;
 
 import java.util.Optional;
 

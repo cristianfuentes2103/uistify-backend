@@ -1,8 +1,9 @@
 package com.uistify.backend.infraestructure.persistence.jpa.mapper;
 
 import com.uistify.backend.domain.model.PlaylistSong;
-import com.uistify.backend.infraestructure.persistence.jpa.Entity.PlaylistEntity;
-import com.uistify.backend.infraestructure.persistence.jpa.Entity.PlaylistSongEntity;
+import com.uistify.backend.infraestructure.persistence.jpa.entity.PlaylistEntity;
+import com.uistify.backend.infraestructure.persistence.jpa.entity.PlaylistSongEntity;
+
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

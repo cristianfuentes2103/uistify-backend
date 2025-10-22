@@ -1,4 +1,4 @@
-package com.uistify.backend.infraestructure.persistence.jpa.Entity;
+package com.uistify.backend.infraestructure.persistence.jpa.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

@@ -1,7 +1,8 @@
 package com.uistify.backend.infraestructure.persistence.jpa.repository;
 
-import com.uistify.backend.infraestructure.persistence.jpa.Entity.SongEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.uistify.backend.infraestructure.persistence.jpa.entity.SongEntity;
 
 import java.util.List;
 

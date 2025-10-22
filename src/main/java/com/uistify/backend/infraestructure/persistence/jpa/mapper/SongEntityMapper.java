@@ -1,7 +1,8 @@
 package com.uistify.backend.infraestructure.persistence.jpa.mapper;
 
 import com.uistify.backend.domain.model.Song;
-import com.uistify.backend.infraestructure.persistence.jpa.Entity.SongEntity;
+import com.uistify.backend.infraestructure.persistence.jpa.entity.SongEntity;
+
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
