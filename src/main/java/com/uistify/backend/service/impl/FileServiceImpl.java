@@ -53,6 +53,7 @@ public class FileServiceImpl implements IFileService {
                     .credentialsProvider(StaticCredentialsProvider.create(credentials))
                     .build();
 
+            log.info("upload file to {}", url);
 
             ResponseInputStream<GetObjectResponse> responseInputStream = s3Client.getObject(GetObjectRequest.builder()
                     .bucket(bucketName).key(objectKey)
