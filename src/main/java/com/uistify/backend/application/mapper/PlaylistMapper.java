@@ -1,45 +1,46 @@
 package com.uistify.backend.application.mapper;
 
-import com.uistify.backend.infraestructure.persistence.jpa.Entity.PlaylistEntity;
-import com.uistify.backend.infraestructure.persistence.jpa.Entity.PlaylistSongEntity;
-import com.uistify.backend.infraestructure.persistence.jpa.Entity.UserEntity;
+import com.uistify.backend.domain.model.Playlist;
+import com.uistify.backend.domain.model.PlaylistSong;
 import com.uistify.backend.presentation.rest.dto.PlaylistDetailDto;
 import com.uistify.backend.presentation.rest.dto.PlaylistDto;
+import com.uistify.backend.presentation.rest.dto.SongDto;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.factory.Mappers;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 
-public class PlaylistMapper {
+@Mapper(uses = SongMapper.class)
+public interface PlaylistMapper {
 
-	private PlaylistMapper(){}
+    PlaylistMapper INSTANCE = Mappers.getMapper(PlaylistMapper.class);
 
-	public static PlaylistEntity toEntity(PlaylistDto dto, UserEntity user){
-		PlaylistEntity entity = new PlaylistEntity();
-		entity.setId(dto.getId());
-		entity.setTitle(dto.getTitle());
-		entity.setDescription(dto.getDescription());
-		entity.setUser(user);
-		
-		return entity;
-	}
+    @Mapping(target = "userId", ignore = true)
+    @Mapping(target = "songs", ignore = true)
+    Playlist toDomain(PlaylistDto dto);
 
-	public static PlaylistDto toDto(PlaylistEntity entity){
-		PlaylistDto dto = new PlaylistDto();
-		dto.setId(entity.getId());
-		dto.setTitle(entity.getTitle());
-		dto.setDescription(entity.getDescription());
+    PlaylistDto toDto(Playlist playlist);
 
-		return dto;
-	}
+    @Mapping(target = "songs", ignore = true)
+    PlaylistDetailDto toDetailDtoBase(Playlist playlist);
 
-	public static PlaylistDetailDto toDetailDto(PlaylistEntity entity){
-		PlaylistDetailDto dto = new PlaylistDetailDto();
-
-		dto.setId(entity.getId());
-		dto.setTitle(entity.getTitle());
-		dto.setDescription(entity.getDescription());
-		for (PlaylistSongEntity song : entity.getSongs()) {
-			dto.getSongs().add(song.getSong());
-		}
-
-		return dto;
-	}
+    default PlaylistDetailDto toDetailDto(Playlist playlist) {
+        PlaylistDetailDto dto = toDetailDtoBase(playlist);
+        if (dto == null) {
+            return null;
+        }
+        List<SongDto> songs = playlist == null || playlist.getSongs() == null
+                ? new ArrayList<>()
+                : playlist.getSongs().stream()
+                        .sorted(Comparator.comparingInt(PlaylistSong::getTrackNumber))
+                        .map(PlaylistSong::getSong)
+                        .map(SongMapper.INSTANCE::toDto)
+                        .collect(Collectors.toCollection(ArrayList::new));
+        dto.setSongs(songs);
+        return dto;
+    }
 }

@@ -1,13 +1,13 @@
 package com.uistify.backend.infraestructure.persistence.jpa.repository;
 
-import java.util.List;
-
+import com.uistify.backend.infraestructure.persistence.jpa.Entity.PlaylistSongEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.uistify.backend.infraestructure.persistence.jpa.Entity.PlaylistSongEntity;
+import java.util.Optional;
 
 public interface PlaylistSongJpaRepository extends JpaRepository<PlaylistSongEntity, Long> {
-	List<PlaylistSongEntity> findByPlaylist_Id(Long id);
-	boolean existsByPlaylistIdAndSongId(Long playlistId, Long songId);
-	PlaylistSongEntity findByPlaylistIdAndSongId(Long playlistId, Long songId);
+
+    boolean existsByPlaylist_IdAndSong_Id(Long playlistId, Long songId);
+
+    Optional<PlaylistSongEntity> findByPlaylist_IdAndSong_Id(Long playlistId, Long songId);
 }

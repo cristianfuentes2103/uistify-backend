@@ -1,9 +1,10 @@
 package com.uistify.backend.domain.port.in;
 
-import org.springframework.http.ResponseEntity;
+import com.uistify.backend.domain.model.FileDownload;
+
+import java.util.Optional;
 
 public interface FileUseCase {
 
-    ResponseEntity<Object> getFile(String objectKey);
-
+    Optional<FileDownload> getFile(String objectKey);
 }

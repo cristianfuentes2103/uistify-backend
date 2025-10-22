@@ -1,17 +1,20 @@
 package com.uistify.backend.domain.port.in;
 
+import com.uistify.backend.domain.model.Song;
+import org.springframework.data.domain.Pageable;
+
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.data.domain.Pageable;
-
-import com.uistify.backend.infraestructure.persistence.jpa.Entity.SongEntity;
-
 public interface SongUseCase {
 
-	List<SongEntity> getAllSongs(Pageable pageable);
-	Optional<SongEntity> getSongById(Long id);
-	List<SongEntity> findByTitleContaining(String fragment);
-	List<SongEntity> findByArtistContaining(String fragment);
-	List<SongEntity> findByAlbumContaining(String fragment);
+    List<Song> getAllSongs(Pageable pageable);
+
+    Optional<Song> getSongById(Long id);
+
+    List<Song> findByTitleContaining(String fragment);
+
+    List<Song> findByArtistContaining(String fragment);
+
+    List<Song> findByAlbumContaining(String fragment);
 }

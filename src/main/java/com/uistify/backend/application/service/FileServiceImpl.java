@@ -1,48 +1,29 @@
 package com.uistify.backend.application.service;
 
+import com.uistify.backend.domain.exception.FileStorageException;
+import com.uistify.backend.domain.model.FileDownload;
 import com.uistify.backend.domain.port.in.FileUseCase;
-import com.uistify.backend.presentation.rest.dto.ErrorDto;
-
+import com.uistify.backend.domain.port.out.FileStorageRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.util.MultiValueMap;
-import software.amazon.awssdk.core.ResponseInputStream;
-import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.GetObjectRequest;
-import software.amazon.awssdk.services.s3.model.GetObjectResponse;
+
+import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 @Slf4j
 public class FileServiceImpl implements FileUseCase {
 
-    @Value("${bucket.name}")
-    String bucketName;
-
-    @Autowired
-    S3Client s3Client;
+    private final FileStorageRepository fileStorageRepository;
 
     @Override
-    public ResponseEntity<Object> getFile(String objectKey) {
+    public Optional<FileDownload> getFile(String objectKey) {
         try {
-            ResponseInputStream<GetObjectResponse> responseInputStream = s3Client.getObject(GetObjectRequest.builder()
-                    .bucket(bucketName)
-                    .key(objectKey)
-                    .build()
-            );
-            MultiValueMap<String, String> headers = new HttpHeaders();
-            headers.add("Content-Disposition", "attachment;filename=" + objectKey);
-            headers.add("Content-Type", responseInputStream.response().contentType());
-            return new ResponseEntity<>(responseInputStream.readAllBytes(), headers, HttpStatus.OK);
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            return new ResponseEntity<>(ErrorDto.builder().status(500).message("Error obteniendo object").build(), HttpStatusCode.valueOf(500));
+            return fileStorageRepository.load(objectKey);
+        } catch (FileStorageException e) {
+            log.error("Error retrieving file {}: {}", objectKey, e.getMessage(), e);
+            throw e;
         }
     }
-
 }

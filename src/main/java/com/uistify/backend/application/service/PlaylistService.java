@@ -1,87 +1,105 @@
 package com.uistify.backend.application.service;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
+import com.uistify.backend.domain.model.Playlist;
+import com.uistify.backend.domain.model.PlaylistSong;
+import com.uistify.backend.domain.model.Song;
+import com.uistify.backend.domain.model.User;
+import com.uistify.backend.domain.port.in.PlaylistUseCase;
+import com.uistify.backend.domain.port.out.PlaylistRepository;
+import com.uistify.backend.domain.port.out.PlaylistSongRepository;
+import com.uistify.backend.domain.port.out.SongRepository;
+import com.uistify.backend.domain.port.out.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.uistify.backend.application.mapper.PlaylistMapper;
-import com.uistify.backend.domain.port.in.PlaylistUseCase;
-import com.uistify.backend.infraestructure.persistence.jpa.Entity.PlaylistEntity;
-import com.uistify.backend.infraestructure.persistence.jpa.Entity.PlaylistSongEntity;
-import com.uistify.backend.infraestructure.persistence.jpa.Entity.SongEntity;
-import com.uistify.backend.infraestructure.persistence.jpa.repository.PlaylistJpaRepository;
-import com.uistify.backend.infraestructure.persistence.jpa.repository.PlaylistSongJpaRepository;
-import com.uistify.backend.infraestructure.persistence.jpa.repository.SongJpaRepository;
-import com.uistify.backend.infraestructure.persistence.jpa.repository.UserJpaRepository;
-import com.uistify.backend.presentation.rest.dto.PlaylistDto;
+import java.util.List;
+import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 @Transactional
-public class PlaylistService implements PlaylistUseCase{
+public class PlaylistService implements PlaylistUseCase {
 
-	@Autowired
-	PlaylistJpaRepository playlistRepository;
+    private final PlaylistRepository playlistRepository;
+    private final PlaylistSongRepository playlistSongRepository;
+    private final SongRepository songRepository;
+    private final UserRepository userRepository;
 
-	@Autowired
-	SongJpaRepository songRepository;
+    @Override
+    public List<Playlist> getAllPlaylistsByUserEmail(String userEmail) {
+        return playlistRepository.findByUserEmail(userEmail);
+    }
 
-	@Autowired
-	PlaylistSongJpaRepository playlistSongRepository;
+    @Override
+    public Playlist createPlaylist(String userEmail, Playlist playlist) {
+        User owner = getUserOrThrow(userEmail);
+        Playlist playlistToSave = playlist.toBuilder()
+                .userId(owner.getId())
+                .build();
+        return playlistRepository.save(playlistToSave);
+    }
 
-	@Autowired
-	UserJpaRepository userRepository;
+    @Override
+    public Playlist updatePlaylist(String userEmail, Playlist playlist) {
+        Playlist existing = getOwnedPlaylist(userEmail, playlist.getId());
+        Playlist toPersist = existing.toBuilder()
+                .title(playlist.getTitle())
+                .description(playlist.getDescription())
+                .build();
+        return playlistRepository.save(toPersist);
+    }
 
-	@Override
-	public List<PlaylistEntity> getAllPlaylistByUserEmail(String userEmail){
-		return playlistRepository.findByUser_Email(userEmail);
-	}
+    @Override
+    public Playlist getPlaylistDetail(String userEmail, Long playlistId) {
+        return getOwnedPlaylist(userEmail, playlistId);
+    }
 
-	@Override 
-	public PlaylistEntity createPlaylist(PlaylistEntity playlist){
-		return playlistRepository.save(playlist);
-	}
+    @Override
+    public void deletePlaylist(String userEmail, Long playlistId) {
+        getOwnedPlaylist(userEmail, playlistId);
+        playlistRepository.deleteById(playlistId);
+    }
 
-	public PlaylistDto updatePlaylist(PlaylistDto playlistUpdate){
-		PlaylistEntity playlist = playlistRepository.findById(playlistUpdate.getId()).get();
+    @Override
+    public void addSongToPlaylist(String userEmail, Long playlistId, Long songId) {
+        Playlist playlist = getOwnedPlaylist(userEmail, playlistId);
+        Song song = songRepository.findById(songId)
+                .orElseThrow(() -> new IllegalArgumentException("Song not found"));
+        if (playlistSongRepository.existsByPlaylistIdAndSongId(playlistId, songId)) {
+            throw new IllegalStateException("Song already in playlist");
+        }
+        int nextTrackNumber = Optional.ofNullable(playlist.getSongs())
+                .map(List::size)
+                .orElse(0) + 1;
+        PlaylistSong newAssociation = PlaylistSong.builder()
+                .playlistId(playlistId)
+                .song(song)
+                .trackNumber(nextTrackNumber)
+                .build();
+        playlistSongRepository.save(newAssociation);
+    }
 
-		playlist.setTitle(playlistUpdate.getTitle());
-		playlist.setDescription(playlistUpdate.getDescription());
+    @Override
+    public void deleteSongFromPlaylist(String userEmail, Long playlistId, Long songId) {
+        getOwnedPlaylist(userEmail, playlistId);
+        PlaylistSong playlistSong = playlistSongRepository.findByPlaylistIdAndSongId(playlistId, songId)
+                .orElseThrow(() -> new IllegalArgumentException("Song not found in playlist"));
+        playlistSongRepository.deleteById(playlistSong.getId());
+    }
 
-		PlaylistEntity playlistUpdated = playlistRepository.save(playlist);
+    private Playlist getOwnedPlaylist(String userEmail, Long playlistId) {
+        User owner = getUserOrThrow(userEmail);
+        Playlist playlist = playlistRepository.findById(playlistId)
+                .orElseThrow(() -> new IllegalArgumentException("Playlist not found"));
+        if (playlist.getUserId() == null || !playlist.getUserId().equals(owner.getId())) {
+            throw new SecurityException("Playlist does not belong to current user");
+        }
+        return playlist;
+    }
 
-		return PlaylistMapper.toDto(playlistUpdated);
-	}
-
-	public void deletePlaylist(Long playlistId){
-		playlistRepository.deleteById(playlistId);
-	}
-
-	public int addSongToPlaylist(Long playlistId, Long songId){
-		PlaylistEntity playlist = playlistRepository.findById(playlistId).get();
-		SongEntity song = songRepository.findById(songId).get();
-
-		if (playlistSongRepository.existsByPlaylistIdAndSongId(playlistId, songId)){
-			return 1;
-		}
-		PlaylistSongEntity newPlaylistSong = new PlaylistSongEntity();
-		newPlaylistSong.setPlaylist(playlist);
-		newPlaylistSong.setSong(song);
-		newPlaylistSong.setNumberSong(playlist.getSongs().size()+1);
-
-		playlistSongRepository.save(newPlaylistSong);
-		return 0;
-	}
-
-	public int deleteSongFromPlaylist(Long playlistId, Long songId){
-		if (!playlistSongRepository.existsByPlaylistIdAndSongId(playlistId, songId)){
-			return 1;
-		}
-
-		PlaylistSongEntity playlistSong = playlistSongRepository.findByPlaylistIdAndSongId(playlistId, songId);
-
-		playlistSongRepository.deleteById(playlistSong.getId());
-		return 0;
-	}
+    private User getUserOrThrow(String userEmail) {
+        return userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+    }
 }

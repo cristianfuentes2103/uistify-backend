@@ -1,8 +1,12 @@
 package com.uistify.backend.presentation.rest.controller;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
+import com.uistify.backend.application.mapper.SongMapper;
+import com.uistify.backend.domain.port.in.SongUseCase;
+import com.uistify.backend.presentation.rest.dto.SongDto;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,37 +15,38 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.uistify.backend.application.service.SongService;
-import com.uistify.backend.infraestructure.persistence.jpa.Entity.SongEntity;
+import java.util.List;
+import java.util.stream.Collectors;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.tags.Tag;
-
-@Tag(name = "Canciones", description = "Catálogo público de canciones")
+@Tag(name = "Canciones", description = "Catalogo publico de canciones")
 @RestController
 @RequestMapping("/api/songs")
+@RequiredArgsConstructor
 public class SongController {
 
-	@Autowired
-	SongService songService;
+    private static final SongMapper SONG_MAPPER = SongMapper.INSTANCE;
 
-	@Operation(summary = "Retorna una lista con las canciones existentes en la base de datos.",
-		description = "Se obtiene un fragmento del total de canciones al especificar los parámetros `page` y `size` de la siguiente forma `/api/songs?page=<Número página>&size=<Tamaño página>`")
-	@ApiResponse(responseCode = "200", description = "Catálogo de canciones.")
-	@GetMapping("")
-	public ResponseEntity<List<SongEntity>> getAllSongs(Pageable pageable){
-		return new ResponseEntity<>(songService.getAllSongs(pageable) , HttpStatus.OK);
-	}
+    private final SongUseCase songUseCase;
 
-	@Operation(summary = "Retorna la canción con el ID.")
-	@ApiResponse(responseCode = "200", description = "Canción encontrada.")
-	@ApiResponse(responseCode = "404", description = "No existe la canción con esa ID.")
-	@GetMapping("/{songId}")
-	public ResponseEntity<SongEntity> getSongById(@PathVariable Long songId){
-		if (songService.getSongById(songId).isEmpty()){
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
-		return new ResponseEntity<>(songService.getSongById(songId).get(), HttpStatus.OK);
-	}
+    @Operation(summary = "Retorna una lista con las canciones existentes en la base de datos.",
+            description = "Se obtiene un fragmento del total de canciones al especificar los parametros `page` y `size` de la siguiente forma `/api/songs?page=<Numero pagina>&size=<Tamano pagina>`")
+    @ApiResponse(responseCode = "200", description = "Catalogo de canciones.")
+    @GetMapping
+    public ResponseEntity<List<SongDto>> getAllSongs(Pageable pageable) {
+        List<SongDto> songs = songUseCase.getAllSongs(pageable).stream()
+                .map(SONG_MAPPER::toDto)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(songs);
+    }
+
+    @Operation(summary = "Retorna la cancion con el ID.")
+    @ApiResponse(responseCode = "200", description = "Cancion encontrada.")
+    @ApiResponse(responseCode = "404", description = "No existe la cancion con ese ID.")
+    @GetMapping("/{songId}")
+    public ResponseEntity<SongDto> getSongById(@PathVariable Long songId) {
+        return songUseCase.getSongById(songId)
+                .map(SONG_MAPPER::toDto)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+    }
 }
