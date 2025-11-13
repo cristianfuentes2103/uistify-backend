@@ -29,7 +29,7 @@ public class PlaylistEntity {
 	@JoinColumn(name = "user_id")
 	private UserEntity user;
 
-	@OneToMany(mappedBy = "playlist", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(mappedBy = "playlist", fetch = FetchType.LAZY)
 	@OrderBy("numberSong ASC")
 	private List<PlaylistSongEntity> songs = new ArrayList<>();
 }

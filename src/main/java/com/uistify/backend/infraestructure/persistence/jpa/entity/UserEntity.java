@@ -29,6 +29,6 @@ public class UserEntity {
 	@OneToOne(mappedBy = "user")
 	private ArtistEntity artist;
 
-	@OneToMany(mappedBy = "user")
+	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
 	private List<PlaylistEntity> playlists;
 }
