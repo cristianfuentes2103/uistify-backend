@@ -2,6 +2,7 @@ package com.uistify.backend.presentation.rest.controller;
 
 import com.uistify.backend.domain.model.User;
 import com.uistify.backend.domain.port.in.UserUseCase;
+import com.uistify.backend.presentation.rest.dto.ErrorDto;
 import com.uistify.backend.presentation.rest.dto.LoginDto;
 import com.uistify.backend.presentation.rest.dto.SignUpDto;
 import com.uistify.backend.util.JwtUtil;
@@ -11,6 +12,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -34,6 +36,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
+@Slf4j
 public class AuthController {
 
     private final AuthenticationManager authenticationManager;
@@ -44,21 +47,26 @@ public class AuthController {
     @ApiResponse(responseCode = "401", description = "Credenciales invalidas")
     @PostMapping("/login")
     public ResponseEntity<String> authenticateUser(@RequestBody LoginDto loginDto) {
-        Optional<User> userOptional = userUseCase.findByEmail(loginDto.getEmail());
-        if (userOptional.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        try {
+            Optional<User> userOptional = userUseCase.findByEmail(loginDto.getEmail());
+            if (userOptional.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            }
+
+            User user = userOptional.get();
+            if (!userUseCase.isPasswordValid(loginDto.getPassword(), user.getPassword())) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
+
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword()));
+
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            return ResponseEntity.ok("{\"token\":\"" + JwtUtil.generateToken(loginDto.getEmail()) + "\"}");
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return ResponseEntity.internalServerError().build();
         }
-
-        User user = userOptional.get();
-        if (!userUseCase.isPasswordValid(loginDto.getPassword(), user.getPassword())) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword()));
-
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        return ResponseEntity.ok("{\"token\":\"" + JwtUtil.generateToken(loginDto.getEmail()) + "\"}");
     }
 
     @Operation(summary = "Registrar un usuario nuevo")
@@ -66,18 +74,24 @@ public class AuthController {
     @ApiResponse(responseCode = "409", description = "Email ya existente")
     @PostMapping("/register")
     public ResponseEntity<String> signUp(@RequestBody SignUpDto signUpDto) {
-        if (userUseCase.existsByEmail(signUpDto.getEmail())) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Email already taken");
+        try {
+            if (userUseCase.existsByEmail(signUpDto.getEmail())) {
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("Email already taken");
+            }
+
+            User newUser = User.builder()
+                    .name(signUpDto.getName())
+                    .email(signUpDto.getEmail())
+                    .password(signUpDto.getPassword())
+                    .build();
+
+            User created = userUseCase.register(newUser);
+
+            return ResponseEntity.ok("{\"token\":\"" + JwtUtil.generateToken(created.getEmail()) + "\"}");
+
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return ResponseEntity.internalServerError().build();
         }
-
-        User newUser = User.builder()
-                .name(signUpDto.getName())
-                .email(signUpDto.getEmail())
-                .password(signUpDto.getPassword())
-                .build();
-
-        User created = userUseCase.register(newUser);
-
-        return ResponseEntity.ok("{\"token\":\"" + JwtUtil.generateToken(created.getEmail()) + "\"}");
     }
 }

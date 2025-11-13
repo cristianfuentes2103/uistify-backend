@@ -26,9 +26,7 @@ public class UserEntity {
 	@Column(length = 128, nullable = false)
 	private String password;
 
-	@OneToOne(mappedBy = "user")
+	@OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
 	private ArtistEntity artist;
 
-	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-	private List<PlaylistEntity> playlists;
 }

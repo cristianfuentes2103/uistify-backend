@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -24,6 +25,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/playlists")
 @RequiredArgsConstructor
+@Slf4j
 public class PlaylistController {
 
     private static final PlaylistMapper PLAYLIST_MAPPER = PlaylistMapper.INSTANCE;
@@ -35,10 +37,15 @@ public class PlaylistController {
     @ApiResponse(responseCode = "403", description = "No autorizado")
     @GetMapping
     public ResponseEntity<List<PlaylistDto>> getAllPlaylist(Authentication auth) {
-        List<PlaylistDto> playlists = playlistUseCase.getAllPlaylistsByUserEmail(auth.getName()).stream()
-                .map(PLAYLIST_MAPPER::toDto)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(playlists);
+        try {
+            List<PlaylistDto> playlists = playlistUseCase.getAllPlaylistsByUserEmail(auth.getName()).stream()
+                    .map(PLAYLIST_MAPPER::toDto)
+                    .collect(Collectors.toList());
+            return ResponseEntity.ok(playlists);
+        } catch (Exception ex) {
+            log.error(ex.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
     @Operation(summary = "Crea una nueva playlist.")
@@ -53,7 +60,11 @@ public class PlaylistController {
             Playlist created = playlistUseCase.createPlaylist(auth.getName(), PLAYLIST_MAPPER.toDomain(playlistDto));
             return ResponseEntity.ok(PLAYLIST_MAPPER.toDto(created));
         } catch (IllegalArgumentException ex) {
+            log.error(ex.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (Exception ex) {
+            log.error(ex.getMessage());
+            return ResponseEntity.internalServerError().build();
         }
     }
 
@@ -69,9 +80,14 @@ public class PlaylistController {
             Playlist updated = playlistUseCase.updatePlaylist(auth.getName(), PLAYLIST_MAPPER.toDomain(playlistDtoUpdate));
             return ResponseEntity.ok(PLAYLIST_MAPPER.toDto(updated));
         } catch (SecurityException ex) {
+            log.error(ex.getMessage());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (IllegalArgumentException ex) {
+            log.error(ex.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (Exception ex) {
+            log.error(ex.getMessage());
+            return ResponseEntity.internalServerError().build();
         }
     }
 
@@ -87,9 +103,14 @@ public class PlaylistController {
             Playlist playlist = playlistUseCase.getPlaylistDetail(auth.getName(), playlistId);
             return ResponseEntity.ok(PLAYLIST_MAPPER.toDetailDto(playlist));
         } catch (SecurityException ex) {
+            log.error(ex.getMessage());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (IllegalArgumentException ex) {
+            log.error(ex.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return ResponseEntity.internalServerError().build();
         }
     }
 
@@ -105,9 +126,14 @@ public class PlaylistController {
             playlistUseCase.deletePlaylist(auth.getName(), playlistId);
             return ResponseEntity.noContent().build();
         } catch (SecurityException ex) {
+            log.error(ex.getMessage());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (IllegalArgumentException ex) {
+            log.error(ex.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return ResponseEntity.internalServerError().build();
         }
     }
 
@@ -127,11 +153,17 @@ public class PlaylistController {
             playlistUseCase.addSongToPlaylist(auth.getName(), playlistId, songId);
             return ResponseEntity.status(HttpStatus.CREATED).build();
         } catch (SecurityException ex) {
+            log.error(ex.getMessage());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (IllegalStateException ex) {
+            log.error(ex.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         } catch (IllegalArgumentException ex) {
+            log.error(ex.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return ResponseEntity.internalServerError().build();
         }
     }
 
@@ -150,9 +182,14 @@ public class PlaylistController {
             playlistUseCase.deleteSongFromPlaylist(auth.getName(), playlistId, songId);
             return ResponseEntity.noContent().build();
         } catch (SecurityException ex) {
+            log.error(ex.getMessage());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (IllegalArgumentException ex) {
+            log.error(ex.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (Exception ex) {
+            log.error(ex.getMessage());
+            return ResponseEntity.internalServerError().build();
         }
     }
 }

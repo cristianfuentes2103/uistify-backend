@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.uistify.backend.infraestructure.persistence.jpa.entity.PlaylistSongEntity;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface PlaylistSongJpaRepository extends JpaRepository<PlaylistSongEntity, Long> {
@@ -11,4 +12,6 @@ public interface PlaylistSongJpaRepository extends JpaRepository<PlaylistSongEnt
     boolean existsByPlaylist_IdAndSong_Id(Long playlistId, Long songId);
 
     Optional<PlaylistSongEntity> findByPlaylist_IdAndSong_Id(Long playlistId, Long songId);
+
+    List<PlaylistSongEntity> findAllByPlaylist_Id(Long playlistId);
 }

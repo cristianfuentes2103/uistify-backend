@@ -11,14 +11,12 @@ import com.uistify.backend.domain.port.out.SongRepository;
 import com.uistify.backend.domain.port.out.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class PlaylistService implements PlaylistUseCase {
 
     private final PlaylistRepository playlistRepository;
@@ -58,6 +56,7 @@ public class PlaylistService implements PlaylistUseCase {
     @Override
     public void deletePlaylist(String userEmail, Long playlistId) {
         getOwnedPlaylist(userEmail, playlistId);
+        playlistSongRepository.deleteAllByPlayListId(playlistId);
         playlistRepository.deleteById(playlistId);
     }
 

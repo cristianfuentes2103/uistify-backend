@@ -15,6 +15,5 @@ public interface UserEntityMapper {
     User toDomain(UserEntity entity);
 
     @Mapping(target = "artist", ignore = true)
-    @Mapping(target = "playlists", ignore = true)
     UserEntity toEntity(User user);
 }

@@ -2,6 +2,7 @@ package com.uistify.backend.domain.port.out;
 
 import com.uistify.backend.domain.model.PlaylistSong;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface PlaylistSongRepository {
@@ -11,6 +12,8 @@ public interface PlaylistSongRepository {
     PlaylistSong save(PlaylistSong playlistSong);
 
     Optional<PlaylistSong> findByPlaylistIdAndSongId(Long playlistId, Long songId);
+
+    void deleteAllByPlayListId(Long playListId);
 
     void deleteById(Long id);
 }

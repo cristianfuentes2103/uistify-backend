@@ -18,14 +18,14 @@ public class PlaylistSongEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "playlist_id")
 	private PlaylistEntity playlist;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "song_id")
 	private SongEntity song;
 
 	@Column(name = "number_song")
-	private int numberSong;
+	private Integer numberSong;
 }

@@ -26,7 +26,7 @@ public class ArtistEntity {
 	@Column(length = 512)
 	private String portraitUrl;
 
-	@OneToOne(cascade = CascadeType.ALL)
+	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id", referencedColumnName = "id")
 	private UserEntity user;
 }

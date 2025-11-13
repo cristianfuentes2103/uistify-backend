@@ -29,7 +29,7 @@ public class AlbumEntity {
 	@Column(name = "cover_image_url")
 	private String coverImageUrl;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "artist_id")
 	private ArtistEntity artist;
 }
