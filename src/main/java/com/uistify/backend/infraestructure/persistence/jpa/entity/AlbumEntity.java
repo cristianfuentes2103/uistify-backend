@@ -16,20 +16,20 @@ import java.time.LocalDate;
 @Table(name = "album")
 public class AlbumEntity {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-	@Column(length = 128, nullable = false)
-	private String name;
+    @Column(length = 128, nullable = false)
+    private String name;
 
-	@Column(name = "release_date", nullable = false)
-	private LocalDate releaseDate;
+    @Column(name = "release_date", nullable = false)
+    private LocalDate releaseDate;
 
-	@Column(name = "cover_image_url")
-	private String coverImageUrl;
+    @Column(name = "cover_image_url")
+    private String coverImageUrl;
 
-	@ManyToOne
-	@JoinColumn(name = "artist_id")
-	private ArtistEntity artist;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "artist_id")
+    private ArtistEntity artist;
 }

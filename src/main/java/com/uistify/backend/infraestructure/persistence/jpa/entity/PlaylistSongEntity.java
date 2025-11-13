@@ -14,18 +14,18 @@ import lombok.Setter;
 @Table(name = "playlist_song")
 public class PlaylistSongEntity {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-	@ManyToOne
-	@JoinColumn(name = "playlist_id")
-	private PlaylistEntity playlist;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "playlist_id")
+    private PlaylistEntity playlist;
 
-	@ManyToOne
-	@JoinColumn(name = "song_id")
-	private SongEntity song;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "song_id")
+    private SongEntity song;
 
-	@Column(name = "number_song")
-	private int numberSong;
+    @Column(name = "number_song")
+    private Integer numberSong;
 }

@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +23,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/songs")
 @RequiredArgsConstructor
+@Slf4j
 public class SongController {
 
     private static final SongMapper SONG_MAPPER = SongMapper.INSTANCE;
@@ -33,10 +35,15 @@ public class SongController {
     @ApiResponse(responseCode = "200", description = "Catalogo de canciones.")
     @GetMapping
     public ResponseEntity<List<SongDto>> getAllSongs(Pageable pageable) {
-        List<SongDto> songs = songUseCase.getAllSongs(pageable).stream()
-                .map(SONG_MAPPER::toDto)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(songs);
+        try {
+            List<SongDto> songs = songUseCase.getAllSongs(pageable).stream()
+                    .map(SONG_MAPPER::toDto)
+                    .collect(Collectors.toList());
+            return ResponseEntity.ok(songs);
+        } catch (Exception ex) {
+            log.error(ex.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
     @Operation(summary = "Retorna la cancion con el ID.")
@@ -44,9 +51,14 @@ public class SongController {
     @ApiResponse(responseCode = "404", description = "No existe la cancion con ese ID.")
     @GetMapping("/{songId}")
     public ResponseEntity<SongDto> getSongById(@PathVariable Long songId) {
-        return songUseCase.getSongById(songId)
-                .map(SONG_MAPPER::toDto)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+        try {
+            return songUseCase.getSongById(songId)
+                    .map(SONG_MAPPER::toDto)
+                    .map(ResponseEntity::ok)
+                    .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+        } catch (Exception ex) {
+            log.error(ex.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
     }
 }

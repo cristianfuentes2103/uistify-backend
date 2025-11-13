@@ -11,22 +11,22 @@ import lombok.Setter;
 @Setter
 @Getter
 @Entity
-@Table(name="artist")
+@Table(name = "artist")
 public class ArtistEntity {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-	@Column(length = 256, nullable = false, unique = true)
-	private String name;
+    @Column(length = 256, nullable = false, unique = true)
+    private String name;
 
-	@Column(length = 64)
-	private String country;
-	
-	@Column(length = 512)
-	private String portraitUrl;
+    @Column(length = 64)
+    private String country;
 
-	@OneToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "user_id", referencedColumnName = "id")
-	private UserEntity user;
+    @Column(length = 512)
+    private String portraitUrl;
+
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private UserEntity user;
 }

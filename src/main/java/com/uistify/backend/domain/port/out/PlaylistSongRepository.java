@@ -12,5 +12,7 @@ public interface PlaylistSongRepository {
 
     Optional<PlaylistSong> findByPlaylistIdAndSongId(Long playlistId, Long songId);
 
+    void deleteAllByPlayListId(Long playListId);
+
     void deleteById(Long id);
 }

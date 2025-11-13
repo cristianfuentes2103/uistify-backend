@@ -17,19 +17,19 @@ import java.util.List;
 @Table(name = "playlist")
 public class PlaylistEntity {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-	private String title;
+    private String title;
 
-	private String description;
+    private String description;
 
-	@ManyToOne
-	@JoinColumn(name = "user_id")
-	private UserEntity user;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private UserEntity user;
 
-	@OneToMany(mappedBy = "playlist", fetch = FetchType.LAZY)
-	@OrderBy("numberSong ASC")
-	private List<PlaylistSongEntity> songs = new ArrayList<>();
+    @OneToMany(mappedBy = "playlist", fetch = FetchType.LAZY)
+    @OrderBy("numberSong ASC")
+    private List<PlaylistSongEntity> songs = new ArrayList<>();
 }

@@ -36,10 +36,10 @@ public interface PlaylistMapper {
         List<SongDto> songs = playlist == null || playlist.getSongs() == null
                 ? new ArrayList<>()
                 : playlist.getSongs().stream()
-                        .sorted(Comparator.comparingInt(PlaylistSong::getTrackNumber))
-                        .map(PlaylistSong::getSong)
-                        .map(SongMapper.INSTANCE::toDto)
-                        .collect(Collectors.toCollection(ArrayList::new));
+                .sorted(Comparator.comparingInt(PlaylistSong::getTrackNumber))
+                .map(PlaylistSong::getSong)
+                .map(SongMapper.INSTANCE::toDto)
+                .collect(Collectors.toCollection(ArrayList::new));
         dto.setSongs(songs);
         return dto;
     }
