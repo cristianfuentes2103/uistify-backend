@@ -4,7 +4,6 @@ import com.uistify.backend.domain.model.Playlist;
 import com.uistify.backend.domain.model.PlaylistSong;
 import com.uistify.backend.infraestructure.persistence.jpa.entity.PlaylistEntity;
 import com.uistify.backend.infraestructure.persistence.jpa.entity.UserEntity;
-
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -31,8 +30,8 @@ public interface PlaylistEntityMapper {
         List<PlaylistSong> songs = entity == null || entity.getSongs() == null
                 ? List.of()
                 : entity.getSongs().stream()
-                        .map(PlaylistSongEntityMapper.INSTANCE::toDomain)
-                        .collect(Collectors.toList());
+                .map(PlaylistSongEntityMapper.INSTANCE::toDomain)
+                .collect(Collectors.toList());
         return playlist.toBuilder().songs(songs).build();
     }
 

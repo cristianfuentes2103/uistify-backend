@@ -37,7 +37,7 @@ public class PlaylistSongJpaAdapter implements PlaylistSongRepository {
     }
 
     @Override
-    public void deleteAllByPlayListId(Long playListId){
+    public void deleteAllByPlayListId(Long playListId) {
         List<PlaylistSongEntity> playlistSongEntities = playlistSongJpaRepository
                 .findAllByPlaylist_Id(playListId);
         playlistSongJpaRepository.deleteAll(playlistSongEntities);

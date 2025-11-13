@@ -2,7 +2,6 @@ package com.uistify.backend.domain.port.out;
 
 import com.uistify.backend.domain.model.PlaylistSong;
 
-import java.util.List;
 import java.util.Optional;
 
 public interface PlaylistSongRepository {

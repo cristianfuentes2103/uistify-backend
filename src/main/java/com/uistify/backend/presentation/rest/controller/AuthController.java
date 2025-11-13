@@ -2,7 +2,6 @@ package com.uistify.backend.presentation.rest.controller;
 
 import com.uistify.backend.domain.model.User;
 import com.uistify.backend.domain.port.in.UserUseCase;
-import com.uistify.backend.presentation.rest.dto.ErrorDto;
 import com.uistify.backend.presentation.rest.dto.LoginDto;
 import com.uistify.backend.presentation.rest.dto.SignUpDto;
 import com.uistify.backend.util.JwtUtil;

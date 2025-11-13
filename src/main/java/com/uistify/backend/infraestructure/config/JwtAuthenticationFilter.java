@@ -14,31 +14,31 @@ import java.io.IOException;
 import java.util.Collections;
 
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
-	@Override
-	protected void doFilterInternal(
-			HttpServletRequest request, 
-			HttpServletResponse response, 
-			FilterChain filterChain) throws ServletException, IOException {
-		
-		String header = request.getHeader("Authorization");
+    @Override
+    protected void doFilterInternal(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            FilterChain filterChain) throws ServletException, IOException {
 
-		if (header != null && header.startsWith("Bearer ")) {
-			String token = header.substring(7);
+        String header = request.getHeader("Authorization");
 
-			try {
-				String email = JwtUtil.validateToken(token);
+        if (header != null && header.startsWith("Bearer ")) {
+            String token = header.substring(7);
 
-				UsernamePasswordAuthenticationToken auth = 
-					new UsernamePasswordAuthenticationToken(email, null, Collections.emptyList());
-				auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+            try {
+                String email = JwtUtil.validateToken(token);
 
-				SecurityContextHolder.getContext().setAuthentication(auth);
-			} catch (Exception e) {
-				response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token inválido");
-				return;
-			}
-		}
+                UsernamePasswordAuthenticationToken auth =
+                        new UsernamePasswordAuthenticationToken(email, null, Collections.emptyList());
+                auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-		filterChain.doFilter(request, response);
-	}
+                SecurityContextHolder.getContext().setAuthentication(auth);
+            } catch (Exception e) {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token inválido");
+                return;
+            }
+        }
+
+        filterChain.doFilter(request, response);
+    }
 }

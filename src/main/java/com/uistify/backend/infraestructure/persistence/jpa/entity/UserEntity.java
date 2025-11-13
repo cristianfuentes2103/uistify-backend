@@ -6,8 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
-
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -15,18 +13,18 @@ import java.util.List;
 @Entity
 @Table(name = "user")
 public class UserEntity {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-	@Column(length = 256, nullable = false)
-	private String name;
-	@Column(length = 256, unique = true, nullable = false)
-	private String email;
-	@Column(length = 128, nullable = false)
-	private String password;
+    @Column(length = 256, nullable = false)
+    private String name;
+    @Column(length = 256, unique = true, nullable = false)
+    private String email;
+    @Column(length = 128, nullable = false)
+    private String password;
 
-	@OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
-	private ArtistEntity artist;
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
+    private ArtistEntity artist;
 
 }

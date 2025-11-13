@@ -2,7 +2,6 @@ package com.uistify.backend.infraestructure.persistence.jpa.mapper;
 
 import com.uistify.backend.domain.model.User;
 import com.uistify.backend.infraestructure.persistence.jpa.entity.UserEntity;
-
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
