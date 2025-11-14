@@ -1,5 +1,6 @@
 package com.uistify.backend.application.service;
 
+import com.uistify.backend.domain.exception.ServerErrorException;
 import com.uistify.backend.domain.model.EmailRequest;
 import com.uistify.backend.domain.port.in.EmailUseCase;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +26,7 @@ public class EmailService implements EmailUseCase {
     String emailApiUrl;
 
     @Override
-    public void sendEmailHtml(String to, String subject, String body) throws Exception {
+    public void sendEmailHtml(String to, String subject, String body) throws ServerErrorException {
 
         RestTemplate restTemplate = restTemplateBuilder.build();
 
