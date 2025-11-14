@@ -39,7 +39,17 @@ public class UserService implements UserUseCase {
     }
 
     @Override
+    public User update(User user) {
+        return userRepository.save(user);
+    }
+
+    @Override
     public boolean isPasswordValid(String rawPassword, String encodedPassword) {
         return passwordEncoder.matches(rawPassword, encodedPassword);
+    }
+
+    @Override
+    public User findById(Long id) {
+        return userRepository.findById(id);
     }
 }

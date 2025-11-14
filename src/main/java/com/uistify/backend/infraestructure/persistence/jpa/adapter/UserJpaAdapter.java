@@ -5,7 +5,9 @@ import com.uistify.backend.domain.port.out.UserRepository;
 import com.uistify.backend.infraestructure.persistence.jpa.mapper.UserEntityMapper;
 import com.uistify.backend.infraestructure.persistence.jpa.repository.UserJpaRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.Optional;
 
@@ -31,5 +33,11 @@ public class UserJpaAdapter implements UserRepository {
     @Override
     public User save(User user) {
         return USER_ENTITY_MAPPER.toDomain(userJpaRepository.save(USER_ENTITY_MAPPER.toEntity(user)));
+    }
+
+    @Override
+    public User findById(Long userId) {
+        return USER_ENTITY_MAPPER.toDomain(userJpaRepository.findById(userId).orElseThrow(() ->
+                new HttpClientErrorException(HttpStatusCode.valueOf(404))));
     }
 }

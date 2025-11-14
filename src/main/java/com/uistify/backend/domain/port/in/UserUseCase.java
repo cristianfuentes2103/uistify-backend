@@ -12,6 +12,10 @@ public interface UserUseCase {
 
     User register(User user);
 
+    User update(User user);
+
     boolean isPasswordValid(String rawPassword, String encodedPassword);
+
+    User findById(Long id);
 }
 
