@@ -175,7 +175,7 @@ public class AuthController {
             emailUseCase.sendEmailHtml(signUpDto.getEmail(), "Verifica tu correo", String.format(HTML_BODY,
                     signUpDto.getName(), verificationLink));
 
-            return ResponseEntity.ok("{\"token\":\"" + JwtUtil.generateToken(created.getEmail()) + "\"}");
+            return ResponseEntity.ok().build();
 
         } catch (Exception e) {
             log.error(e.getMessage());
