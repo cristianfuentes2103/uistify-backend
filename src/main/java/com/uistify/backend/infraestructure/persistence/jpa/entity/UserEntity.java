@@ -23,6 +23,8 @@ public class UserEntity {
     private String email;
     @Column(length = 128, nullable = false)
     private String password;
+    @Column()
+    private Integer verified;
 
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
     private ArtistEntity artist;
