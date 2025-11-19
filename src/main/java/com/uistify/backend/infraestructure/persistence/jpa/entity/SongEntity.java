@@ -28,11 +28,11 @@ public class SongEntity {
     @Column(name = "release_date", nullable = false)
     private LocalDate releaseDate;
 
-    @Column(name = "artist")
-    private String artist;
+    @Column(name = "artist_id")
+    private ArtistEntity artist;
 
-    @Column(name = "album")
-    private String album;
+    @Column(name = "album_id")
+    private AlbumEntity album;
 
     @Column(length = 128)
     private String genre;
