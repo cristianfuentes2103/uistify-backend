@@ -14,9 +14,5 @@ public interface SongRepository {
 
     List<Song> findByTitleContaining(String fragment);
 
-    List<Song> findByArtistContaining(String fragment);
-
-    List<Song> findByAlbumContaining(String fragment);
-
     boolean existsById(Long id);
 }

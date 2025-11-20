@@ -40,20 +40,6 @@ public class SongJpaAdapter implements SongRepository {
     }
 
     @Override
-    public List<Song> findByArtistContaining(String fragment) {
-        return songJpaRepository.findByArtistContainingIgnoreCase(fragment).stream()
-                .map(SONG_ENTITY_MAPPER::toDomain)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<Song> findByAlbumContaining(String fragment) {
-        return songJpaRepository.findByAlbumContainingIgnoreCase(fragment).stream()
-                .map(SONG_ENTITY_MAPPER::toDomain)
-                .collect(Collectors.toList());
-    }
-
-    @Override
     public boolean existsById(Long id) {
         return songJpaRepository.existsById(id);
     }
