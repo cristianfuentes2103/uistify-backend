@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -52,6 +53,16 @@ public class PlaylistService implements PlaylistUseCase {
     public Playlist getPlaylistDetail(String userEmail, Long playlistId) {
         return getOwnedPlaylist(userEmail, playlistId);
     }
+
+	@Override
+	public List<Song> getSongsFromPlaylist(String userEmail, Long playlistId){
+		Playlist playlist = getOwnedPlaylist(userEmail, playlistId);
+		return playlist.getSongs().stream()
+			.map(playlistSong -> {
+				return playlistSong.getSong();
+			})
+			.collect(Collectors.toList());
+	}
 
     @Override
     public void deletePlaylist(String userEmail, Long playlistId) {

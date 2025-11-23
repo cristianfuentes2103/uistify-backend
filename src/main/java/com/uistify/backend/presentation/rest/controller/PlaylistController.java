@@ -1,10 +1,14 @@
 package com.uistify.backend.presentation.rest.controller;
 
 import com.uistify.backend.application.mapper.PlaylistMapper;
+import com.uistify.backend.application.mapper.SongMapper;
 import com.uistify.backend.domain.model.Playlist;
+import com.uistify.backend.domain.model.Song;
 import com.uistify.backend.domain.port.in.PlaylistUseCase;
-import com.uistify.backend.presentation.rest.dto.PlaylistDetailDto;
+import com.uistify.backend.domain.port.out.ArtistRepository;
 import com.uistify.backend.presentation.rest.dto.PlaylistDto;
+import com.uistify.backend.presentation.rest.dto.SongDto;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -29,8 +33,11 @@ import java.util.stream.Collectors;
 public class PlaylistController {
 
     private static final PlaylistMapper PLAYLIST_MAPPER = PlaylistMapper.INSTANCE;
+    private static final SongMapper SONG_MAPPER = SongMapper.INSTANCE;
 
     private final PlaylistUseCase playlistUseCase;
+
+	private final ArtistRepository artistRepository;
 
     @Operation(summary = "Obtiene todas las playlists del usuario")
     @ApiResponse(responseCode = "200", description = "Acceso autorizado")
@@ -91,17 +98,17 @@ public class PlaylistController {
         }
     }
 
-    @Operation(summary = "Devuelve la playlist con sus canciones.")
+    @Operation(summary = "Devuelve detalles de la playlist.")
     @ApiResponse(responseCode = "200", description = "Playlist proporcionada")
     @ApiResponse(responseCode = "401", description = "No autorizado")
     @GetMapping("/{playlistId}")
-    public ResponseEntity<PlaylistDetailDto> getPlaylist(
+    public ResponseEntity<PlaylistDto> getPlaylist(
             @Parameter(description = "id de playlist")
             @PathVariable Long playlistId,
             Authentication auth) {
         try {
             Playlist playlist = playlistUseCase.getPlaylistDetail(auth.getName(), playlistId);
-            return ResponseEntity.ok(PLAYLIST_MAPPER.toDetailDto(playlist));
+            return ResponseEntity.ok(PLAYLIST_MAPPER.toDto(playlist));
         } catch (SecurityException ex) {
             log.error(ex.getMessage());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -113,6 +120,34 @@ public class PlaylistController {
             return ResponseEntity.internalServerError().build();
         }
     }
+
+    @Operation(summary = "Devuelve las canciones de la playlist.")
+    @ApiResponse(responseCode = "200", description = "Playlist proporcionada")
+    @ApiResponse(responseCode = "401", description = "No autorizado")
+    @GetMapping("/{playlistId}/songs")
+	public ResponseEntity<List<SongDto>> getSongsFromPlaylist(
+            @Parameter(description = "id de playlist")
+            @PathVariable Long playlistId,
+            Authentication auth){
+        try {
+			List<Song> songs = playlistUseCase.getSongsFromPlaylist(auth.getName(), playlistId);
+            return ResponseEntity.ok(songs.stream().map(song -> {
+					SongDto dto = SONG_MAPPER.toDto(song);
+					String artistName = artistRepository.findById(song.getArtistId()).get().getName();
+					dto.setArtist(artistName);
+					return dto;
+				}).collect(Collectors.toList()));
+        } catch (SecurityException ex) {
+            log.error(ex.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        } catch (IllegalArgumentException ex) {
+            log.error(ex.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
+	}
 
     @Operation(summary = "Elimina una playlist.")
     @ApiResponse(responseCode = "204", description = "Playlist eliminada con exito.")

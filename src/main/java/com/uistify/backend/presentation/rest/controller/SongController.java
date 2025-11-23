@@ -2,6 +2,7 @@ package com.uistify.backend.presentation.rest.controller;
 
 import com.uistify.backend.application.mapper.SongMapper;
 import com.uistify.backend.domain.port.in.SongUseCase;
+import com.uistify.backend.domain.port.out.ArtistRepository;
 import com.uistify.backend.presentation.rest.dto.SongDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -30,6 +31,8 @@ public class SongController {
 
     private final SongUseCase songUseCase;
 
+	private final ArtistRepository artistRepository;
+
     @Operation(summary = "Retorna una lista con las canciones existentes en la base de datos.",
             description = "Se obtiene un fragmento del total de canciones al especificar los parametros `page` y `size` de la siguiente forma `/api/songs?page=<Numero pagina>&size=<Tamano pagina>`")
     @ApiResponse(responseCode = "200", description = "Catalogo de canciones.")
@@ -37,7 +40,14 @@ public class SongController {
     public ResponseEntity<List<SongDto>> getAllSongs(Pageable pageable) {
         try {
             List<SongDto> songs = songUseCase.getAllSongs(pageable).stream()
-                    .map(SONG_MAPPER::toDto)
+                    .map(song -> {
+						SongDto dto = SONG_MAPPER.toDto(song);
+
+						String artistName = artistRepository.findById(song.getArtistId()).get().getName();
+
+						dto.setArtist(artistName);
+						return dto;
+					})
                     .collect(Collectors.toList());
             return ResponseEntity.ok(songs);
         } catch (Exception ex) {
@@ -53,7 +63,14 @@ public class SongController {
     public ResponseEntity<SongDto> getSongById(@PathVariable Long songId) {
         try {
             return songUseCase.getSongById(songId)
-                    .map(SONG_MAPPER::toDto)
+                    .map(song -> {
+						SongDto dto = SONG_MAPPER.toDto(song);
+
+						String artistName = artistRepository.findById(song.getArtistId()).get().getName();
+
+						dto.setArtist(artistName);
+						return dto;
+					})
                     .map(ResponseEntity::ok)
                     .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
         } catch (Exception ex) {
