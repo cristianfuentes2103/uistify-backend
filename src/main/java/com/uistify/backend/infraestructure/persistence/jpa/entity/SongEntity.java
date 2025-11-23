@@ -32,9 +32,8 @@ public class SongEntity {
     @JoinColumn(name = "artist_id")
     private ArtistEntity artist;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "album_id")
-    private AlbumEntity album;
+	@Column(name = "album")
+    private String album;
 
     @Column(length = 128)
     private String genre;

@@ -14,7 +14,7 @@ public class Song {
     int duration;
     LocalDate releaseDate;
     Long artistId;
-    Long albumId;
+    String album;
     String genre;
     String pictureUrl;
     String sourceUrl;
