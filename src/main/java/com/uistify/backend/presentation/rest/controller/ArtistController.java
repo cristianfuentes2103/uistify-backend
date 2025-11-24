@@ -1,6 +1,8 @@
 package com.uistify.backend.presentation.rest.controller;
 
+import com.uistify.backend.domain.port.in.FileUseCase;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -8,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.uistify.backend.application.mapper.ArtistMapper;
@@ -24,6 +27,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.multipart.MultipartFile;
 
 @Tag(name = "Módulo artistas", description = "Gestión del artista propio del usuario")
 @RestController
@@ -38,6 +42,7 @@ public class ArtistController {
 	private static final SongMapper SONG_MAPPER = SongMapper.INSTANCE;
 
 	private final ArtistRepository artistRepository;
+    private final FileUseCase fileService;
 
 	@Operation(summary = "Obtener artista del usuario")
 	@ApiResponse(responseCode = "200", description = "Artista correcto")
@@ -94,10 +99,15 @@ public class ArtistController {
 	@Operation(summary = "Subir detalle de canción")
 	@ApiResponse(responseCode = "200", description = "Canción subida")
 	@ApiResponse(responseCode = "400", description = "No existe el artista")
-	@PostMapping("/songs")
-	public ResponseEntity<SongDto> uploadSongDetail(Authentication auth, @RequestBody SongDto dto){
+	@PostMapping(value = "/songs", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	public ResponseEntity<SongDto> uploadSongDetail(Authentication auth,
+                                                    @RequestPart SongDto dto,
+                                                    @RequestPart MultipartFile file)
+    {
 		try {
-			Song uploadedSong = artistUseCase.uploadSongDetail(auth.getName(), SONG_MAPPER.toDomain(dto));
+            String objectKey = fileService.uploadFile(file.getBytes(), file.getContentType());
+            dto.setSourceUrl(objectKey);
+            Song uploadedSong = artistUseCase.uploadSongDetail(auth.getName(), SONG_MAPPER.toDomain(dto));
 			SongDto finalSong = SONG_MAPPER.toDto(uploadedSong);
 			finalSong.setArtist(artistRepository.findById(uploadedSong.getArtistId()).get().getName());
 

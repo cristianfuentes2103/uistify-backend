@@ -8,14 +8,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import software.amazon.awssdk.core.ResponseInputStream;
+import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.S3Exception;
 
 import java.io.IOException;
 import java.util.Optional;
+import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
@@ -48,4 +51,25 @@ public class S3FileStorageAdapter implements FileStorageRepository {
             throw new FileStorageException("Error retrieving file from storage", e);
         }
     }
+
+    @Override
+    public String uploadFile(byte[] file, String contentType) {
+        String key = UUID.randomUUID().toString();
+
+        PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                .bucket(bucketName)
+                .key(key)
+                .contentType(contentType)
+                .build();
+
+        try {
+            s3Client.putObject(putObjectRequest, RequestBody.fromBytes(file));
+            log.info("Archivo subido exitosamente con key: {}", key);
+            return key;
+        } catch (S3Exception e) {
+            log.error(e.getMessage());
+            throw new FileStorageException("Error subiendo archivo a S3");
+        }
+    }
+
 }

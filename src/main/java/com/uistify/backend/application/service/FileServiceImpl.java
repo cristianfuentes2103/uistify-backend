@@ -26,4 +26,9 @@ public class FileServiceImpl implements FileUseCase {
             throw e;
         }
     }
+
+    @Override
+    public String uploadFile(byte[] file, String contentType) {
+        return fileStorageRepository.uploadFile(file, contentType);
+    }
 }
