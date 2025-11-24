@@ -13,8 +13,4 @@ public interface SongUseCase {
     Optional<Song> getSongById(Long id);
 
     List<Song> findByTitleContaining(String fragment);
-
-    List<Song> findByArtistContaining(String fragment);
-
-    List<Song> findByAlbumContaining(String fragment);
 }

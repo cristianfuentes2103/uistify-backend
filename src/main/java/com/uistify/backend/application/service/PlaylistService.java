@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +29,29 @@ public class PlaylistService implements PlaylistUseCase {
     public List<Playlist> getAllPlaylistsByUserEmail(String userEmail) {
         return playlistRepository.findByUserEmail(userEmail);
     }
+
+	@Override
+	public List<Playlist> getAllPublicPlaylists(){
+		return playlistRepository.findAllByPublicPlaylistTrue();
+	}
+
+	@Override
+	public Playlist getPublicPlaylist(Long playlistId){
+        Playlist publicPlaylist = playlistRepository.findById(playlistId)
+                .orElseThrow(() -> new IllegalArgumentException("Playlist not found"));
+		if (!publicPlaylist.isPublicPlaylist()){
+			throw new SecurityException("Playlist is not public");
+		}
+		return publicPlaylist;
+	}
+
+	@Override
+    public List<Song> getSongsFromPublicPlaylist(Long playlistId){
+		Playlist publicPlaylist = getPublicPlaylist(playlistId);
+		return publicPlaylist.getSongs().stream()
+			.map(playlistSong -> playlistSong.getSong())
+			.collect(Collectors.toList());
+	}
 
     @Override
     public Playlist createPlaylist(String userEmail, Playlist playlist) {
@@ -52,6 +76,14 @@ public class PlaylistService implements PlaylistUseCase {
     public Playlist getPlaylistDetail(String userEmail, Long playlistId) {
         return getOwnedPlaylist(userEmail, playlistId);
     }
+
+	@Override
+	public List<Song> getSongsFromPlaylist(String userEmail, Long playlistId){
+		Playlist playlist = getOwnedPlaylist(userEmail, playlistId);
+		return playlist.getSongs().stream()
+			.map(playlistSong -> playlistSong.getSong())
+			.collect(Collectors.toList());
+	}
 
     @Override
     public void deletePlaylist(String userEmail, Long playlistId) {

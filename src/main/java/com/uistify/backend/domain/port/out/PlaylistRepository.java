@@ -9,6 +9,8 @@ public interface PlaylistRepository {
 
     List<Playlist> findByUserEmail(String email);
 
+	List<Playlist> findAllByPublicPlaylistTrue();
+
     Optional<Playlist> findById(Long id);
 
     Playlist save(Playlist playlist);

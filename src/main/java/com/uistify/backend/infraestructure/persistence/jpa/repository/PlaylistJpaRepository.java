@@ -9,4 +9,6 @@ public interface PlaylistJpaRepository extends JpaRepository<PlaylistEntity, Lon
     List<PlaylistEntity> findByUser_Id(Long id);
 
     List<PlaylistEntity> findByUser_Email(String email);
+
+	List<PlaylistEntity> findAllByPublicPlaylistTrue();
 }

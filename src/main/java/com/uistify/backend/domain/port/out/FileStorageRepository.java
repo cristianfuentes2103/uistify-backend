@@ -7,4 +7,5 @@ import java.util.Optional;
 public interface FileStorageRepository {
 
     Optional<FileDownload> load(String objectKey);
+    String uploadFile(byte[] file, String contentType);
 }

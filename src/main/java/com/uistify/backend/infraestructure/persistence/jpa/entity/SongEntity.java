@@ -28,10 +28,11 @@ public class SongEntity {
     @Column(name = "release_date", nullable = false)
     private LocalDate releaseDate;
 
-    @Column(name = "artist")
-    private String artist;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "artist_id")
+    private ArtistEntity artist;
 
-    @Column(name = "album")
+	@Column(name = "album")
     private String album;
 
     @Column(length = 128)

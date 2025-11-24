@@ -32,14 +32,4 @@ public class SongService implements SongUseCase {
     public List<Song> findByTitleContaining(String fragment) {
         return songRepository.findByTitleContaining(fragment);
     }
-
-    @Override
-    public List<Song> findByArtistContaining(String fragment) {
-        return songRepository.findByArtistContaining(fragment);
-    }
-
-    @Override
-    public List<Song> findByAlbumContaining(String fragment) {
-        return songRepository.findByAlbumContaining(fragment);
-    }
 }

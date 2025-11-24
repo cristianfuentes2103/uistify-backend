@@ -39,19 +39,10 @@ public class SongJpaAdapter implements SongRepository {
                 .collect(Collectors.toList());
     }
 
-    @Override
-    public List<Song> findByArtistContaining(String fragment) {
-        return songJpaRepository.findByArtistContainingIgnoreCase(fragment).stream()
-                .map(SONG_ENTITY_MAPPER::toDomain)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<Song> findByAlbumContaining(String fragment) {
-        return songJpaRepository.findByAlbumContainingIgnoreCase(fragment).stream()
-                .map(SONG_ENTITY_MAPPER::toDomain)
-                .collect(Collectors.toList());
-    }
+	@Override
+	public Song save(Song song){
+		return SONG_ENTITY_MAPPER.toDomain(songJpaRepository.save(SONG_ENTITY_MAPPER.toEntity(song)));
+	}
 
     @Override
     public boolean existsById(Long id) {

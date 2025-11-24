@@ -13,7 +13,7 @@ public class Song {
     String title;
     int duration;
     LocalDate releaseDate;
-    String artist;
+    Long artistId;
     String album;
     String genre;
     String pictureUrl;
