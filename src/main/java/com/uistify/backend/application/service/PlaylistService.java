@@ -49,9 +49,7 @@ public class PlaylistService implements PlaylistUseCase {
     public List<Song> getSongsFromPublicPlaylist(Long playlistId){
 		Playlist publicPlaylist = getPublicPlaylist(playlistId);
 		return publicPlaylist.getSongs().stream()
-			.map(playlistSong -> {
-				return playlistSong.getSong();
-			})
+			.map(playlistSong -> playlistSong.getSong())
 			.collect(Collectors.toList());
 	}
 
@@ -83,9 +81,7 @@ public class PlaylistService implements PlaylistUseCase {
 	public List<Song> getSongsFromPlaylist(String userEmail, Long playlistId){
 		Playlist playlist = getOwnedPlaylist(userEmail, playlistId);
 		return playlist.getSongs().stream()
-			.map(playlistSong -> {
-				return playlistSong.getSong();
-			})
+			.map(playlistSong -> playlistSong.getSong())
 			.collect(Collectors.toList());
 	}
 
