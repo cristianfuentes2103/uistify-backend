@@ -15,4 +15,6 @@ public interface SongRepository {
     List<Song> findByTitleContaining(String fragment);
 
     boolean existsById(Long id);
+
+	Song save(Song song);
 }
