@@ -22,6 +22,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 @Tag(name = "Playlists", description = "CRUD playlists")
@@ -44,15 +45,9 @@ public class PlaylistController {
     @ApiResponse(responseCode = "403", description = "No autorizado")
     @GetMapping
     public ResponseEntity<List<PlaylistDto>> getAllPlaylist(Authentication auth) {
-        try {
-            List<PlaylistDto> playlists = playlistUseCase.getAllPlaylistsByUserEmail(auth.getName()).stream()
+		return handleRequest(() -> playlistUseCase.getAllPlaylistsByUserEmail(auth.getName()).stream()
                     .map(PLAYLIST_MAPPER::toDto)
-                    .collect(Collectors.toList());
-            return ResponseEntity.ok(playlists);
-        } catch (Exception ex) {
-            log.error(ex.getMessage());
-            return ResponseEntity.internalServerError().build();
-        }
+                    .collect(Collectors.toList()));
     }
 
     @Operation(summary = "Crea una nueva playlist.")
@@ -63,16 +58,7 @@ public class PlaylistController {
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Playlist nueva", required = true)
             @RequestBody PlaylistDto playlistDto,
             Authentication auth) {
-        try {
-            Playlist created = playlistUseCase.createPlaylist(auth.getName(), PLAYLIST_MAPPER.toDomain(playlistDto));
-            return ResponseEntity.ok(PLAYLIST_MAPPER.toDto(created));
-        } catch (IllegalArgumentException ex) {
-            log.error(ex.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        } catch (Exception ex) {
-            log.error(ex.getMessage());
-            return ResponseEntity.internalServerError().build();
-        }
+		return handleRequest(() -> PLAYLIST_MAPPER.toDto(playlistUseCase.createPlaylist(auth.getName(), PLAYLIST_MAPPER.toDomain(playlistDto))));
     }
 
     @Operation(summary = "Actualiza una playlist.")
@@ -83,19 +69,7 @@ public class PlaylistController {
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Playlist actualizada, con un id existente", required = true)
             @RequestBody PlaylistDto playlistDtoUpdate,
             Authentication auth) {
-        try {
-            Playlist updated = playlistUseCase.updatePlaylist(auth.getName(), PLAYLIST_MAPPER.toDomain(playlistDtoUpdate));
-            return ResponseEntity.ok(PLAYLIST_MAPPER.toDto(updated));
-        } catch (SecurityException ex) {
-            log.error(ex.getMessage());
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        } catch (IllegalArgumentException ex) {
-            log.error(ex.getMessage());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        } catch (Exception ex) {
-            log.error(ex.getMessage());
-            return ResponseEntity.internalServerError().build();
-        }
+		return handleRequest(() -> PLAYLIST_MAPPER.toDto(playlistUseCase.updatePlaylist(auth.getName(), PLAYLIST_MAPPER.toDomain(playlistDtoUpdate))));
     }
 
     @Operation(summary = "Devuelve detalles de la playlist.")
@@ -106,19 +80,7 @@ public class PlaylistController {
             @Parameter(description = "id de playlist")
             @PathVariable Long playlistId,
             Authentication auth) {
-        try {
-            Playlist playlist = playlistUseCase.getPlaylistDetail(auth.getName(), playlistId);
-            return ResponseEntity.ok(PLAYLIST_MAPPER.toDto(playlist));
-        } catch (SecurityException ex) {
-            log.error(ex.getMessage());
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        } catch (IllegalArgumentException ex) {
-            log.error(ex.getMessage());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            return ResponseEntity.internalServerError().build();
-        }
+		return handleRequest(() -> PLAYLIST_MAPPER.toDto(playlistUseCase.getPlaylistDetail(auth.getName(), playlistId)));
     }
 
     @Operation(summary = "Devuelve las canciones de la playlist.")
@@ -129,24 +91,15 @@ public class PlaylistController {
             @Parameter(description = "id de playlist")
             @PathVariable Long playlistId,
             Authentication auth){
-        try {
+		return handleRequest(() -> {
 			List<Song> songs = playlistUseCase.getSongsFromPlaylist(auth.getName(), playlistId);
-            return ResponseEntity.ok(songs.stream().map(song -> {
+            return songs.stream().map(song -> {
 					SongDto dto = SONG_MAPPER.toDto(song);
 					String artistName = artistRepository.findById(song.getArtistId()).get().getName();
 					dto.setArtist(artistName);
 					return dto;
-				}).collect(Collectors.toList()));
-        } catch (SecurityException ex) {
-            log.error(ex.getMessage());
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        } catch (IllegalArgumentException ex) {
-            log.error(ex.getMessage());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            return ResponseEntity.internalServerError().build();
-        }
+				}).collect(Collectors.toList());
+		});
 	}
 
     @Operation(summary = "Elimina una playlist.")
@@ -157,19 +110,7 @@ public class PlaylistController {
             @Parameter(description = "id de playlist")
             @PathVariable Long playlistId,
             Authentication auth) {
-        try {
-            playlistUseCase.deletePlaylist(auth.getName(), playlistId);
-            return ResponseEntity.noContent().build();
-        } catch (SecurityException ex) {
-            log.error(ex.getMessage());
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        } catch (IllegalArgumentException ex) {
-            log.error(ex.getMessage());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            return ResponseEntity.internalServerError().build();
-        }
+		return handleVoid(() -> playlistUseCase.deletePlaylist(auth.getName(), playlistId), HttpStatus.NO_CONTENT);
     }
 
     @Operation(summary = "Anade una cancion a una playlist.")
@@ -184,22 +125,7 @@ public class PlaylistController {
             @Parameter(description = "id de cancion")
             @PathVariable Long songId,
             Authentication auth) {
-        try {
-            playlistUseCase.addSongToPlaylist(auth.getName(), playlistId, songId);
-            return ResponseEntity.status(HttpStatus.CREATED).build();
-        } catch (SecurityException ex) {
-            log.error(ex.getMessage());
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        } catch (IllegalStateException ex) {
-            log.error(ex.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        } catch (IllegalArgumentException ex) {
-            log.error(ex.getMessage());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            return ResponseEntity.internalServerError().build();
-        }
+		return handleVoid(() -> playlistUseCase.addSongToPlaylist(auth.getName(), playlistId, songId), HttpStatus.CREATED);
     }
 
     @Operation(summary = "Elimina una cancion de una playlist.")
@@ -213,18 +139,41 @@ public class PlaylistController {
             @Parameter(description = "id de cancion")
             @PathVariable Long songId,
             Authentication auth) {
-        try {
-            playlistUseCase.deleteSongFromPlaylist(auth.getName(), playlistId, songId);
-            return ResponseEntity.noContent().build();
-        } catch (SecurityException ex) {
-            log.error(ex.getMessage());
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        } catch (IllegalArgumentException ex) {
-            log.error(ex.getMessage());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        } catch (Exception ex) {
-            log.error(ex.getMessage());
-            return ResponseEntity.internalServerError().build();
-        }
+		return handleVoid(() -> playlistUseCase.deleteSongFromPlaylist(auth.getName(), playlistId, songId), HttpStatus.NO_CONTENT);
     }
+
+	private <T> ResponseEntity<T> handleRequest(Supplier<T> action){
+		try {
+			return ResponseEntity.ok(action.get());
+		} catch (SecurityException ex) {
+			log.error(ex.getMessage());
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+		} catch (IllegalArgumentException ex) {
+			log.error(ex.getMessage());
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+		} catch (IllegalStateException ex) {
+			log.error(ex.getMessage());
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+		} catch (Exception ex) {
+			log.error(ex.getMessage());
+			return ResponseEntity.internalServerError().build();
+		}
+	}
+
+	private ResponseEntity<Void> handleVoid(Runnable action, HttpStatus successStatus) {
+		try {
+			action.run();
+			return ResponseEntity.status(successStatus).build();
+		} catch (SecurityException ex) {
+			log.error(ex.getMessage());
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+		} catch (IllegalArgumentException ex) {
+			log.error(ex.getMessage());
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+		} catch (Exception ex) {
+			log.error(ex.getMessage());
+			return ResponseEntity.internalServerError().build();
+		}
+	}
+
 }
