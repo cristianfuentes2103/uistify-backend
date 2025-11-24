@@ -7,4 +7,5 @@ public class PlaylistDto {
     private Long id;
     private String title;
     private String description;
+	private boolean publicPlaylist;
 }

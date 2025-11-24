@@ -29,6 +29,9 @@ public class PlaylistEntity {
     @JoinColumn(name = "user_id")
     private UserEntity user;
 
+	@Column(name = "public_playlist", nullable = false)
+	private boolean publicPlaylist;
+
     @OneToMany(mappedBy = "playlist", fetch = FetchType.LAZY)
     @OrderBy("numberSong ASC")
     private List<PlaylistSongEntity> songs = new ArrayList<>();

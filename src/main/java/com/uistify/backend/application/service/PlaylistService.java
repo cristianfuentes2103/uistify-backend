@@ -30,6 +30,31 @@ public class PlaylistService implements PlaylistUseCase {
         return playlistRepository.findByUserEmail(userEmail);
     }
 
+	@Override
+	public List<Playlist> getAllPublicPlaylists(){
+		return playlistRepository.findAllByPublicPlaylistTrue();
+	}
+
+	@Override
+	public Playlist getPublicPlaylist(Long playlistId){
+        Playlist publicPlaylist = playlistRepository.findById(playlistId)
+                .orElseThrow(() -> new IllegalArgumentException("Playlist not found"));
+		if (!publicPlaylist.isPublicPlaylist()){
+			throw new SecurityException("Playlist is not public");
+		}
+		return publicPlaylist;
+	}
+
+	@Override
+    public List<Song> getSongsFromPublicPlaylist(Long playlistId){
+		Playlist publicPlaylist = getPublicPlaylist(playlistId);
+		return publicPlaylist.getSongs().stream()
+			.map(playlistSong -> {
+				return playlistSong.getSong();
+			})
+			.collect(Collectors.toList());
+	}
+
     @Override
     public Playlist createPlaylist(String userEmail, Playlist playlist) {
         User owner = getUserOrThrow(userEmail);

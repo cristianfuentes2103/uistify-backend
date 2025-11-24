@@ -43,6 +43,13 @@ public class PlaylistJpaAdapter implements PlaylistRepository {
                 });
     }
 
+	@Override
+	public List<Playlist> findAllByPublicPlaylistTrue(){
+		return playlistJpaRepository.findAllByPublicPlaylistTrue().stream()
+			.map(PLAYLIST_ENTITY_MAPPER::toDomain)
+			.collect(Collectors.toList());
+	}
+
     @Override
     public Playlist save(Playlist playlist) {
         PlaylistEntity entity = playlist.getId() != null

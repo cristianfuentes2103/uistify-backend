@@ -13,6 +13,7 @@ public class Playlist {
     String title;
     String description;
     Long userId;
+	boolean publicPlaylist;
 
     List<PlaylistSong> songs;
 }

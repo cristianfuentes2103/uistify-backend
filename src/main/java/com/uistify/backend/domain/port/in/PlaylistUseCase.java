@@ -7,6 +7,12 @@ import java.util.List;
 
 public interface PlaylistUseCase {
 
+	List<Playlist> getAllPublicPlaylists();
+
+	Playlist getPublicPlaylist(Long playlistId);
+
+    List<Song> getSongsFromPublicPlaylist(Long playlistId);
+
     List<Playlist> getAllPlaylistsByUserEmail(String userEmail);
 
     Playlist createPlaylist(String userEmail, Playlist playlist);
