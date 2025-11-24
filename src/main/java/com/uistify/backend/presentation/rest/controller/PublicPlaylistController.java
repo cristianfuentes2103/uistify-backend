@@ -19,6 +19,8 @@ import com.uistify.backend.domain.port.out.ArtistRepository;
 import com.uistify.backend.presentation.rest.dto.PlaylistDto;
 import com.uistify.backend.presentation.rest.dto.SongDto;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,6 +39,9 @@ public class PublicPlaylistController {
 
 	private final ArtistRepository artistRepository;
 
+	@Operation(summary = "Obtiene todas las playlist públicas")
+	@ApiResponse(responseCode = "200", description = "Correcto")
+	@ApiResponse(responseCode = "500", description = "Internal server error")
 	@GetMapping
 	public ResponseEntity<List<PlaylistDto>> getAllPublicPlaylists(){
 		try {
@@ -50,6 +55,11 @@ public class PublicPlaylistController {
 		}
 	}
 
+	@Operation(summary = "Retorna el detalle de la playlist pública.")
+	@ApiResponse(responseCode = "200", description = "Acceso correcto")
+	@ApiResponse(responseCode = "404", description = "No se encontró una playlist con esa ID")
+	@ApiResponse(responseCode = "401", description = "La playlist no es pública")
+	@ApiResponse(responseCode = "500", description = "Internal server error")
 	@GetMapping("/{playlistId}")
 	public ResponseEntity<PlaylistDto> getPublicPlaylist(@PathVariable Long playlistId){
 		try {
@@ -67,6 +77,11 @@ public class PublicPlaylistController {
 		}
 	}
 
+	@Operation(summary = "Retorna las canciones de la playlist pública.")
+	@ApiResponse(responseCode = "200", description = "Acceso correcto")
+	@ApiResponse(responseCode = "404", description = "No se encontró una playlist con esa ID")
+	@ApiResponse(responseCode = "401", description = "La playlist no es pública")
+	@ApiResponse(responseCode = "500", description = "Internal server error")
 	@GetMapping("/{playlistId}/songs")
 	public ResponseEntity<List<SongDto>> getSongsFromPlaylist(@PathVariable Long playlistId){
 		try {
