@@ -30,7 +30,7 @@ public class PlaylistEntity {
     private UserEntity user;
 
 	@Column(name = "public_playlist", nullable = false)
-	private boolean publicPlaylist;
+	private Boolean publicPlaylist;
 
     @OneToMany(mappedBy = "playlist", fetch = FetchType.LAZY)
     @OrderBy("numberSong ASC")
