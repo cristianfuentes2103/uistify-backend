@@ -39,7 +39,7 @@ public class PlaylistService implements PlaylistUseCase {
 	public Playlist getPublicPlaylist(Long playlistId){
         Playlist publicPlaylist = playlistRepository.findById(playlistId)
                 .orElseThrow(() -> new IllegalArgumentException("Playlist not found"));
-		if (!publicPlaylist.isPublicPlaylist()){
+		if (!publicPlaylist.getPublicPlaylist()){
 			throw new SecurityException("Playlist is not public");
 		}
 		return publicPlaylist;
