@@ -68,6 +68,7 @@ public class PlaylistService implements PlaylistUseCase {
         Playlist toPersist = existing.toBuilder()
                 .title(playlist.getTitle())
                 .description(playlist.getDescription())
+				.publicPlaylist(playlist.isPublicPlaylist())
                 .build();
         return playlistRepository.save(toPersist);
     }
