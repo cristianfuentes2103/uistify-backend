@@ -133,4 +133,5 @@ public class PlaylistService implements PlaylistUseCase {
         return userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
     }
+
 }
